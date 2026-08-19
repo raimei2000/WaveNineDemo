@@ -1,4 +1,5 @@
 ﻿#include "NineCharacter.h"
+#include "NinePlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -82,6 +83,49 @@ void ANineCharacter::StopSprint(const FInputActionValue& Value)
 void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+    if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+    {
+        if (ANinePlayerController* PlayerController = Cast<ANinePlayerController>(GetController()))
+        {
+            if (PlayerController->MoveAction)
+            {
+                EnhancedInput->BindAction(PlayerController->MoveAction,
+                                          ETriggerEvent::Triggered,
+                                          this,
+                                          &ANineCharacter::Move);
+            }
+            if (PlayerController->LookAction)
+            {
+                EnhancedInput->BindAction(PlayerController->LookAction,
+                                          ETriggerEvent::Triggered,
+                                          this,
+                                          &ANineCharacter::Look);
+            }
+            if (PlayerController->JumpAction)
+            {
+                EnhancedInput->BindAction(PlayerController->JumpAction,
+                                          ETriggerEvent::Triggered,
+                                          this,
+                                          &ANineCharacter::StartJump);
+                EnhancedInput->BindAction(PlayerController->JumpAction,
+                                          ETriggerEvent::Completed,
+                                          this,
+                                          &ANineCharacter::StopJump);
+            }
+            if (PlayerController->SprintAction)
+            {
+                EnhancedInput->BindAction(PlayerController->SprintAction,
+                                          ETriggerEvent::Triggered,
+                                          this,
+                                          &ANineCharacter::StartSprint);
+                EnhancedInput->BindAction(PlayerController->SprintAction,
+                                          ETriggerEvent::Completed,
+                                          this,
+                                          &ANineCharacter::StopSprint);
+            }
+        }
+    }
 
 }
 
