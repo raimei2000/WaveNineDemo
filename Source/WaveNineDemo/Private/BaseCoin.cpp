@@ -1,10 +1,9 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "BaseCoin.h"
+﻿#include "BaseCoin.h"
 
 ABaseCoin::ABaseCoin()
 {
+    PrimaryActorTick.bCanEverTick = true;
+
     PointValue = 0;
     ItemType = "DefaultCoin";
 }
