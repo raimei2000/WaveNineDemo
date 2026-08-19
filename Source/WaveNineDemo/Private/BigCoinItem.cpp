@@ -2,6 +2,8 @@
 
 ABigCoinItem::ABigCoinItem()
 {
+    PrimaryActorTick.bCanEverTick = true;
+
     PointValue = 50;
     ItemType = "BigCoin";
 }
