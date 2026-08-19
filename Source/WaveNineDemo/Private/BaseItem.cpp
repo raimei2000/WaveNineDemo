@@ -40,3 +40,8 @@ FName ABaseItem::GetItemType() const
 {
 	return ItemType;
 }
+
+void ABaseItem::DestroyItem()
+{
+	Destroy();
+}
