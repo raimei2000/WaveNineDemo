@@ -8,8 +8,11 @@ AHealthPotionItem::AHealthPotionItem()
 
 void AHealthPotionItem::ActivateItem(AActor* Activator)
 {
-    if (GEngine)
+    if (Activator && Activator->ActorHasTag("Player"))
     {
-        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString(TEXT("Heal")));
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString(TEXT("Heal")));
+        }
     }
 }
