@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "BaseItem.h"
+#include "MovableItem.h"
 #include "BaseCoin.generated.h"
 
 UCLASS()
-class WAVENINEDEMO_API ABaseCoin : public ABaseItem
+class WAVENINEDEMO_API ABaseCoin : public AMovableItem
 {
 	GENERATED_BODY()
 
