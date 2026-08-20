@@ -63,7 +63,7 @@ void ABaseItem::BeginPlay()
 	EndLocation = StartLocation + FVector(0.f, 0.f, SafeRange);
 
 	RunningTime = FMath::Max(PhaseOffset * Period, 0.f);
-	StaticMesh->SetRelativeRotation(FRotator(0.f, RotationOffset, 0.f));
+	Collision->SetRelativeRotation(FRotator(0.f, RotationOffset, 0.f));
 }
 
 void ABaseItem::Tick(float DeltaTime)
@@ -88,5 +88,5 @@ void ABaseItem::Move(float DeltaTime)
 
 void ABaseItem::Rotate(float DeltaTime)
 {
-	StaticMesh->AddRelativeRotation(FRotator(0.f, RotationSpeed * DeltaTime, 0.f));
+	Collision->AddRelativeRotation(FRotator(0.f, RotationSpeed * DeltaTime, 0.f));
 }
