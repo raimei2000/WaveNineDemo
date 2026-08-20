@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "BaseItem.h"
+#include "MovableItem.h"
 #include "HealthPotionItem.generated.h"
 
 UCLASS()
-class WAVENINEDEMO_API AHealthPotionItem : public ABaseItem
+class WAVENINEDEMO_API AHealthPotionItem : public AMovableItem
 {
 	GENERATED_BODY()
 
