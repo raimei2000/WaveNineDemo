@@ -14,5 +14,16 @@ public:
 
 	virtual void BeginPlay() override;
 
+	void AddScore(int32 score);
+
+protected:
 	void StartLevel();
+
+private:
+	int32 Score;
+
+	int32 SpawnedCoinCount;
+
+	int32 CollectedCoinCount;
+
 };

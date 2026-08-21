@@ -1,5 +1,7 @@
 ﻿#include "NineGameState.h"
 #include "SpawnVolume.h"
+#include "BaseItem.h"
+#include "BaseCoin.h"
 #include "Kismet/GameplayStatics.h"
 
 ANineGameState::ANineGameState()
@@ -11,6 +13,11 @@ void ANineGameState::BeginPlay()
     Super::BeginPlay();
 
     StartLevel();
+}
+
+void ANineGameState::AddScore(int32 score)
+{
+    Score += score;
 }
 
 void ANineGameState::StartLevel()
@@ -25,7 +32,11 @@ void ANineGameState::StartLevel()
         {
             if (ASpawnVolume* Volume = Cast<ASpawnVolume>(Volumes[0]))
             {
-                Volume->RandomSpawnItem();
+                ABaseItem* SpawnedItem = Volume->RandomSpawnItem();
+                if (SpawnedItem && SpawnedItem->IsA(ABaseCoin::StaticClass()))
+                {
+                    SpawnedCoinCount++;
+                }
             }
         }
     }

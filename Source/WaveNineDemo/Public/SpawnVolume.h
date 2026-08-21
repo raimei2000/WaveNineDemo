@@ -16,7 +16,7 @@ class WAVENINEDEMO_API ASpawnVolume : public AActor
 public:	
 	ASpawnVolume();
 
-	void RandomSpawnItem() const;
+	ABaseItem* RandomSpawnItem() const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
