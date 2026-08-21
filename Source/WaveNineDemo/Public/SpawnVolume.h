@@ -16,6 +16,8 @@ class WAVENINEDEMO_API ASpawnVolume : public AActor
 public:	
 	ASpawnVolume();
 
+	void RandomSpawnItem() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* RootScene;
@@ -23,7 +25,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* SpawnVolume;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SpawnTable")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnTable")
 	UDataTable* ItemSpawnTable;
 
 protected:
@@ -34,8 +36,6 @@ protected:
 	FItemSpawnRow* GetRandomItem() const;
 
 	ABaseItem* SpawnItem(TSubclassOf<ABaseItem> ItemClass) const;
-
-	void RandomSpawnItem() const;
 
 private:
 	FVector OriginLocation;
