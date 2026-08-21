@@ -4,6 +4,8 @@
 #include "GameFramework/GameState.h"
 #include "NineGameState.generated.h"
 
+class UNineGameInstance;
+
 UCLASS()
 class WAVENINEDEMO_API ANineGameState : public AGameState
 {
@@ -17,13 +19,17 @@ public:
 	void OnCoinCollected(int32 score);
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game|Levels")
+	TArray<FName> LevelNames;
+
+protected:
 	void StartLevel();
 
 	virtual void Tick(float DeltaTime) override;
 
-private:
-	void AddScore(int32 score);
+	void OnGameOver();
 
+private:
 	void EndLevel();
 
 private:
@@ -33,4 +39,11 @@ private:
 
 	int32 CollectedCoinCount;
 
+	FTimerHandle LevelTimerHandle;
+
+	float LevelDuration;
+
+	int32 MaxLevelIndex;
+
+	UNineGameInstance* GameInstance;
 };

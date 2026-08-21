@@ -2,24 +2,40 @@
 #include "SpawnVolume.h"
 #include "BaseItem.h"
 #include "BaseCoin.h"
+#include "NineGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 ANineGameState::ANineGameState()
 {
     PrimaryActorTick.bCanEverTick = true;
+
+    Score = 0;
+    SpawnedCoinCount = 0;
+    CollectedCoinCount = 0;
+    LevelDuration = 10.f;
 }
 
 void ANineGameState::BeginPlay()
 {
     Super::BeginPlay();
 
+    if (UGameInstance* TempGameInst = GetGameInstance())
+    {
+        if (UNineGameInstance* NineGameInstance = Cast<UNineGameInstance>(TempGameInst))
+        {
+            GameInstance = NineGameInstance;
+        }
+    }
+
     StartLevel();
+
+    MaxLevelIndex = LevelNames.Num() - 1;
 }
 
 void ANineGameState::OnCoinCollected(int32 score)
 {
     CollectedCoinCount++;
-    AddScore(score);
+    GameInstance->AddTotalScore(score);
 
     if (SpawnedCoinCount <= CollectedCoinCount)
     {
@@ -27,13 +43,23 @@ void ANineGameState::OnCoinCollected(int32 score)
     }
 }
 
-void ANineGameState::AddScore(int32 score)
-{
-    Score += score;
-}
-
 void ANineGameState::EndLevel()
 {
+    GetWorldTimerManager().ClearTimer(LevelTimerHandle);
+
+    if (GameInstance->GetCurrentLevelIndex() < MaxLevelIndex)
+    {
+        GameInstance->IncreaseLevelIndex();
+        if (LevelNames.IsValidIndex(GameInstance->GetCurrentLevelIndex()))
+        {
+            UGameplayStatics::OpenLevel(GetWorld(), LevelNames[GameInstance->GetCurrentLevelIndex()]);
+        }
+    }
+    else
+    {
+        OnGameOver();
+        return;
+    }
 }
 
 void ANineGameState::StartLevel()
@@ -55,12 +81,9 @@ void ANineGameState::StartLevel()
                 }
             }
         }
-
-        if (GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Level loaded. Coins: %d"), SpawnedCoinCount));
-        }
     }
+
+    GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndLevel, LevelDuration, false);
 }
 
 void ANineGameState::Tick(float DeltaTime)
@@ -68,5 +91,14 @@ void ANineGameState::Tick(float DeltaTime)
     if (GEngine)
     {
         GEngine->AddOnScreenDebugMessage(1, 0.f, FColor::Black, FString::Printf(TEXT("Coin: %d / %d"), CollectedCoinCount, SpawnedCoinCount));
+        GEngine->AddOnScreenDebugMessage(3, 0.f, FColor::Yellow, FString::Printf(TEXT("Score: %d"), GameInstance->GetTotalScore()));
+    }
+}
+
+void ANineGameState::OnGameOver()
+{
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Game Over"));
     }
 }
