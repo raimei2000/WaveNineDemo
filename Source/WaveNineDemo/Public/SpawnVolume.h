@@ -5,6 +5,9 @@
 #include "SpawnVolume.generated.h"
 
 class UBoxComponent;
+class ABaseItem;
+struct FItemSpawnRow;
+
 UCLASS()
 class WAVENINEDEMO_API ASpawnVolume : public AActor
 {
@@ -20,10 +23,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* SpawnVolume;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SpawnTable")
+	UDataTable* ItemSpawnTable;
+
 protected:
 	virtual void BeginPlay() override;
 
-	FVector GetRandomPointInVolume();
+	FVector GetRandomPointInVolume() const;
+
+	FItemSpawnRow* GetRandomItem() const;
+
+	ABaseItem* SpawnItem(TSubclassOf<ABaseItem> ItemClass) const;
+
+	void RandomSpawnItem() const;
 
 private:
 	FVector OriginLocation;
