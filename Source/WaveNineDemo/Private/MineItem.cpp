@@ -36,4 +36,6 @@ void AMineItem::Explode()
 			UGameplayStatics::ApplyDamage(Actor, ExplosionDamage, nullptr, this, UDamageType::StaticClass());
 		}
 	}
+
+	DestroyItem();
 }
