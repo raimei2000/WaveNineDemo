@@ -152,7 +152,7 @@ void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-void ANineCharacter::Heal(int32 HealAmount)
+void ANineCharacter::Heal(float HealAmount)
 {
     Health = FMath::Clamp(Health + HealAmount, 0.f, MaxHealth);
 }
