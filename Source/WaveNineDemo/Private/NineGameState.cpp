@@ -14,7 +14,7 @@ ANineGameState::ANineGameState()
 
     SpawnedCoinCount = 0;
     CollectedCoinCount = 0;
-    LevelDuration = 10.f;
+    LevelDuration = 20.f;
 }
 
 void ANineGameState::BeginPlay()
@@ -78,7 +78,7 @@ void ANineGameState::UpdateHUD() const
                 if (UTextBlock* TimeText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Time"))))
                 {
                     float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
-                    TimeText->SetText(FText::FromString(FString::Printf(TEXT("Time: %.2f"), RemainingTime)));
+                    TimeText->SetText(FText::FromString(FString::Printf(TEXT("Time: %.1f"), RemainingTime)));
                 }
 
                 if (UTextBlock* ScoreText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Score"))))
@@ -119,7 +119,7 @@ void ANineGameState::StartLevel()
     }
 
     GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndLevel, LevelDuration, false);
-    GetWorldTimerManager().SetTimer(HUDUpdateTimerHandle, this, &ANineGameState::UpdateHUD, 0.01f, true);
+    GetWorldTimerManager().SetTimer(HUDUpdateTimerHandle, this, &ANineGameState::UpdateHUD, 0.1f, true);
     UpdateHUD();
 }
 
