@@ -3,13 +3,15 @@
 #include "BaseItem.h"
 #include "BaseCoin.h"
 #include "NineGameInstance.h"
+#include "NinePlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/TextBlock.h"
+#include "Blueprint/UserWidget.h"
 
 ANineGameState::ANineGameState()
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    Score = 0;
     SpawnedCoinCount = 0;
     CollectedCoinCount = 0;
     LevelDuration = 10.f;
@@ -37,6 +39,8 @@ void ANineGameState::OnCoinCollected(int32 score)
     CollectedCoinCount++;
     GameInstance->AddTotalScore(score);
 
+    UpdateHUD();
+
     if (SpawnedCoinCount <= CollectedCoinCount)
     {
         EndLevel();
@@ -46,6 +50,7 @@ void ANineGameState::OnCoinCollected(int32 score)
 void ANineGameState::EndLevel()
 {
     GetWorldTimerManager().ClearTimer(LevelTimerHandle);
+    GetWorldTimerManager().ClearTimer(HUDUpdateTimerHandle);
 
     if (GameInstance->GetCurrentLevelIndex() < MaxLevelIndex)
     {
@@ -59,6 +64,36 @@ void ANineGameState::EndLevel()
     {
         OnGameOver();
         return;
+    }
+}
+
+void ANineGameState::UpdateHUD() const
+{
+    if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+    {
+        if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(PlayerController))
+        {
+            if (UUserWidget* HUD = NinePlayerController->GetHUDWidget())
+            {
+                if (UTextBlock* TimeText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Time"))))
+                {
+                    float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
+                    TimeText->SetText(FText::FromString(FString::Printf(TEXT("Time: %.2f"), RemainingTime)));
+                }
+
+                if (UTextBlock* ScoreText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Score"))))
+                {
+                    int32 Score = GameInstance->GetTotalScore();
+                    ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), Score)));
+                }
+
+                if (UTextBlock* LevelText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Level"))))
+                {
+                    int32 Level = GameInstance->GetCurrentLevelIndex() + 1;
+                    LevelText->SetText(FText::FromString(FString::Printf(TEXT("Level: %d"), Level)));
+                }
+            }
+        }
     }
 }
 
@@ -84,6 +119,8 @@ void ANineGameState::StartLevel()
     }
 
     GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndLevel, LevelDuration, false);
+    GetWorldTimerManager().SetTimer(HUDUpdateTimerHandle, this, &ANineGameState::UpdateHUD, 0.01f, true);
+    UpdateHUD();
 }
 
 void ANineGameState::Tick(float DeltaTime)
@@ -97,6 +134,7 @@ void ANineGameState::Tick(float DeltaTime)
 
 void ANineGameState::OnGameOver()
 {
+    UpdateHUD();
     if (GEngine)
     {
         GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Game Over"));

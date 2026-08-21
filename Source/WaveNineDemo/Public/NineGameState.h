@@ -32,14 +32,16 @@ protected:
 private:
 	void EndLevel();
 
-private:
-	int32 Score;
+	void UpdateHUD() const;
 
+private:
 	int32 SpawnedCoinCount;
 
 	int32 CollectedCoinCount;
 
 	FTimerHandle LevelTimerHandle;
+
+	FTimerHandle HUDUpdateTimerHandle;
 
 	float LevelDuration;
 
