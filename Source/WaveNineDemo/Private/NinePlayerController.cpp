@@ -1,5 +1,6 @@
 ﻿#include "NinePlayerController.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h"
 
 ANinePlayerController::ANinePlayerController() : InputMappingContext(nullptr),
                                                  MoveAction(nullptr),
@@ -22,6 +23,15 @@ void ANinePlayerController::BeginPlay()
             {
                 Subsystem->AddMappingContext(InputMappingContext, 0);
             }
+        }
+    }
+
+    if (HUDWidgetClass)
+    {
+        UUserWidget* HUDWidget = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+        if (HUDWidget)
+        {
+            HUDWidget->AddToViewport();
         }
     }
 }

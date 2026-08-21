@@ -40,6 +40,9 @@ protected:
     virtual void Tick(float DeltaTime) override;
 
 public:
+    UFUNCTION(BlueprintCallable)
+    float GetCharacterHealth() const;
+
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     void Heal(float HealAmount);

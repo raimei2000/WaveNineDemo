@@ -103,6 +103,11 @@ void ANineCharacter::Tick(float DeltaTime)
     }
 }
 
+float ANineCharacter::GetCharacterHealth() const
+{
+    return Health;
+}
+
 void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);

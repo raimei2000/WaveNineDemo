@@ -12,11 +12,13 @@ class WAVENINEDEMO_API UNineGameInstance : public UGameInstance
 public:
 	UNineGameInstance();
 
+	UFUNCTION(BlueprintCallable)
+	int32 GetTotalScore() const;
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetCurrentLevelIndex() const;
+
 	void AddTotalScore(int32 Amount);
-
-	int32 GetTotalScore();
-
-	int32 GetCurrentLevelIndex();
 
 	void IncreaseLevelIndex();
 

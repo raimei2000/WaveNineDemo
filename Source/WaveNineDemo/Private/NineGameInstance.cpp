@@ -11,12 +11,12 @@ void UNineGameInstance::AddTotalScore(int32 Amount)
     TotalScore += Amount;
 }
 
-int32 UNineGameInstance::GetTotalScore()
+int32 UNineGameInstance::GetTotalScore() const
 {
     return TotalScore;
 }
 
-int32 UNineGameInstance::GetCurrentLevelIndex()
+int32 UNineGameInstance::GetCurrentLevelIndex() const
 {
     return CurrentLevelIndex;
 }
