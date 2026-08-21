@@ -83,6 +83,26 @@ void ANineCharacter::StopSprint(const FInputActionValue& Value)
     }
 }
 
+float ANineCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+    float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+    Health = FMath::Clamp(Health - DamageAmount, 0.f, MaxHealth);
+
+    if (Health <= 0.f)
+    {
+        //Death
+    }
+    return ActualDamage;
+}
+
+void ANineCharacter::Tick(float DeltaTime)
+{
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(2, 0.f, FColor::Red, FString::Printf(TEXT("Player HP: %d"), Health));
+    }
+}
+
 void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -134,5 +154,9 @@ void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ANineCharacter::Heal(int32 HealAmount)
 {
-    Health = FMath::Min(Health + HealAmount, MaxHealth);
+    Health = FMath::Clamp(Health + HealAmount, 0.f, MaxHealth);
+}
+
+void ANineCharacter::OnDeath()
+{
 }

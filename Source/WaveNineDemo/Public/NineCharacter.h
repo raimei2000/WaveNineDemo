@@ -35,10 +35,17 @@ protected:
     UFUNCTION()
     void StopSprint(const FInputActionValue& Value);
 
+    virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+    virtual void Tick(float DeltaTime) override;
+
 public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     void Heal(int32 HealAmount);
+
+private:
+    void OnDeath();
 
 private:
     float NormalSpeed;
