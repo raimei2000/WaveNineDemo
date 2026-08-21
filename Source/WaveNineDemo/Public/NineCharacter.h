@@ -38,9 +38,14 @@ protected:
 public:
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+    void Heal(int32 HealAmount);
+
 private:
     float NormalSpeed;
     float SprintSpeedMultiplier;
     float SprintSpeed;
+
+    int32 Health;
+    int32 MaxHealth;
 
 };

@@ -1,4 +1,5 @@
 ﻿#include "HealthPotionItem.h"
+#include "NineCharacter.h"
 
 AHealthPotionItem::AHealthPotionItem()
 {
@@ -10,9 +11,10 @@ void AHealthPotionItem::ActivateItem(AActor* Activator)
 {
     if (Activator && Activator->ActorHasTag("Player"))
     {
-        if (GEngine)
+        if (ANineCharacter* Player = Cast<ANineCharacter>(Activator))
         {
-            GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString(TEXT("Heal")));
+            Player->Heal(HealAmount);
         }
+        DestroyItem();
     }
 }

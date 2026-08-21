@@ -23,6 +23,9 @@ ANineCharacter::ANineCharacter()
     SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
 
     GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+
+    MaxHealth = 100;
+    Health = MaxHealth;
 }
 
 void ANineCharacter::Move(const FInputActionValue& Value)
@@ -129,3 +132,7 @@ void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
+void ANineCharacter::Heal(int32 HealAmount)
+{
+    Health = FMath::Min(Health + HealAmount, MaxHealth);
+}
