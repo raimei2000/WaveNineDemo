@@ -99,7 +99,7 @@ void ANineCharacter::Tick(float DeltaTime)
 {
     if (GEngine)
     {
-        GEngine->AddOnScreenDebugMessage(2, 0.f, FColor::Red, FString::Printf(TEXT("Player HP: %d"), Health));
+        GEngine->AddOnScreenDebugMessage(2, 0.f, FColor::Red, FString::Printf(TEXT("Player HP: %.0f"), Health));
     }
 }
 
