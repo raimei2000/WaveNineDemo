@@ -79,13 +79,14 @@ ABaseItem* ASpawnVolume::SpawnItem(TSubclassOf<ABaseItem> ItemClass) const
 	return SpawnedItem;
 }
 
-void ASpawnVolume::RandomSpawnItem() const
+ABaseItem* ASpawnVolume::RandomSpawnItem() const
 {
 	if (const FItemSpawnRow* SelectedRow = GetRandomItem())
 	{
 		if (UClass* ActualClass = SelectedRow->ItemClass.Get())
 		{
-			SpawnItem(ActualClass);
+			return SpawnItem(ActualClass);
 		}
 	}
+	return nullptr;
 }
