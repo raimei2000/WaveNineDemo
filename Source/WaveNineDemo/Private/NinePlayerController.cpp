@@ -2,12 +2,19 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 
-ANinePlayerController::ANinePlayerController() : InputMappingContext(nullptr),
-                                                 MoveAction(nullptr),
-                                                 JumpAction(nullptr),
-                                                 LookAction(nullptr),
-                                                 SprintAction(nullptr)
+ANinePlayerController::ANinePlayerController() :
+    InputMappingContext(nullptr),
+    MoveAction(nullptr),
+    JumpAction(nullptr),
+    LookAction(nullptr),
+    SprintAction(nullptr),
+    HUDWidgetInstance(nullptr)
 {
+}
+
+UUserWidget* ANinePlayerController::GetHUDWidget() const
+{
+    return HUDWidgetInstance;
 }
 
 void ANinePlayerController::BeginPlay()
@@ -28,10 +35,10 @@ void ANinePlayerController::BeginPlay()
 
     if (HUDWidgetClass)
     {
-        UUserWidget* HUDWidget = CreateWidget<UUserWidget>(this, HUDWidgetClass);
-        if (HUDWidget)
+        HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+        if (HUDWidgetInstance)
         {
-            HUDWidget->AddToViewport();
+            HUDWidgetInstance->AddToViewport();
         }
     }
 }

@@ -17,18 +17,28 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input");
 	UInputMappingContext* InputMappingContext;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input");
 	UInputAction* MoveAction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input");
 	UInputAction* JumpAction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input");
 	UInputAction* LookAction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input");
 	UInputAction* SprintAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	TSubclassOf<UUserWidget> HUDWidgetClass;
 
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	UUserWidget* GetHUDWidget() const;
+
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	UUserWidget* HUDWidgetInstance;
+
 	virtual void BeginPlay() override;
 };
