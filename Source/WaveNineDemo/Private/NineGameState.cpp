@@ -39,5 +39,10 @@ void ANineGameState::StartLevel()
                 }
             }
         }
+
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Level loaded. Coins: %d"), SpawnedCoinCount));
+        }
     }
 }

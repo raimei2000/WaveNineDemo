@@ -34,7 +34,7 @@ void AMineItem::Explode()
 		{
 			if (GEngine)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString(TEXT("Player got %.0f damage."), ExplosionDamage));
+				GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Player got %.0f damage."), ExplosionDamage));
 			}
 		}
 	}
