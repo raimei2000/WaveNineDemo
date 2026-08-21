@@ -14,10 +14,17 @@ public:
 
 	virtual void BeginPlay() override;
 
-	void AddScore(int32 score);
+	void OnCoinCollected(int32 score);
 
 protected:
 	void StartLevel();
+
+	virtual void Tick(float DeltaTime) override;
+
+private:
+	void AddScore(int32 score);
+
+	void EndLevel();
 
 private:
 	int32 Score;

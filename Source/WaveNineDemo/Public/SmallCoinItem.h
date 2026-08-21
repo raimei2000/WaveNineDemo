@@ -11,7 +11,4 @@ class WAVENINEDEMO_API ASmallCoinItem : public ABaseCoin
 
 public:
 	ASmallCoinItem();
-
-	virtual void ActivateItem(AActor* Activator) override;
-	
 };

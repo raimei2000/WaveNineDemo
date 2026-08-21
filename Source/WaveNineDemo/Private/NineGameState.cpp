@@ -6,6 +6,7 @@
 
 ANineGameState::ANineGameState()
 {
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 void ANineGameState::BeginPlay()
@@ -15,9 +16,24 @@ void ANineGameState::BeginPlay()
     StartLevel();
 }
 
+void ANineGameState::OnCoinCollected(int32 score)
+{
+    CollectedCoinCount++;
+    AddScore(score);
+
+    if (SpawnedCoinCount <= CollectedCoinCount)
+    {
+        EndLevel();
+    }
+}
+
 void ANineGameState::AddScore(int32 score)
 {
     Score += score;
+}
+
+void ANineGameState::EndLevel()
+{
 }
 
 void ANineGameState::StartLevel()
@@ -44,5 +60,13 @@ void ANineGameState::StartLevel()
         {
             GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Black, FString::Printf(TEXT("Level loaded. Coins: %d"), SpawnedCoinCount));
         }
+    }
+}
+
+void ANineGameState::Tick(float DeltaTime)
+{
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(1, 0.f, FColor::Black, FString::Printf(TEXT("Coin: %d / %d"), CollectedCoinCount, SpawnedCoinCount));
     }
 }

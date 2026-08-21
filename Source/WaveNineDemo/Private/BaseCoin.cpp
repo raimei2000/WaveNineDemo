@@ -1,9 +1,9 @@
 ﻿#include "BaseCoin.h"
+#include "NineGameState.h"
+#include "Engine/World.h"
 
 ABaseCoin::ABaseCoin()
 {
-    PrimaryActorTick.bCanEverTick = true;
-
     PointValue = 0;
     ItemType = "DefaultCoin";
 }
@@ -12,7 +12,14 @@ void ABaseCoin::ActivateItem(AActor* Activator)
 {
     if (Activator && Activator->ActorHasTag("Player"))
     {
-        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Black, FString::Printf(TEXT("Coin")));
+        if (UWorld* World = GetWorld())
+        {
+            if (ANineGameState* GameState = World->GetGameState<ANineGameState>())
+            {
+                GameState->OnCoinCollected(PointValue);
+            }
+        }
+
         DestroyItem();
     }
 }
