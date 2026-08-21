@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "BaseItem.h"
 #include "ItemSpawnRow.generated.h"
 
 USTRUCT(BlueprintType)
@@ -13,7 +14,7 @@ public:
 	FName ItemName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AActor> ItemClass;
+	TSubclassOf<ABaseItem> ItemClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SpawnChance;
