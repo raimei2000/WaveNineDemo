@@ -14,7 +14,7 @@ ANineGameState::ANineGameState()
 
     SpawnedCoinCount = 0;
     CollectedCoinCount = 0;
-    LevelDuration = 20.f;
+    LevelDuration = 10.f;
 }
 
 void ANineGameState::BeginPlay()
@@ -118,9 +118,16 @@ void ANineGameState::StartLevel()
         }
     }
 
+    if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+    {
+        if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(PlayerController))
+        {
+            NinePlayerController->ShowGameHUD();
+        }
+    }
+
     GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndLevel, LevelDuration, false);
     GetWorldTimerManager().SetTimer(HUDUpdateTimerHandle, this, &ANineGameState::UpdateHUD, 0.1f, true);
-    UpdateHUD();
 }
 
 void ANineGameState::Tick(float DeltaTime)
@@ -134,9 +141,11 @@ void ANineGameState::Tick(float DeltaTime)
 
 void ANineGameState::OnGameOver()
 {
-    UpdateHUD();
-    if (GEngine)
+    if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
     {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Game Over"));
+        if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(PlayerController))
+        {
+            NinePlayerController->ShowMainMenu(true);
+        }
     }
 }

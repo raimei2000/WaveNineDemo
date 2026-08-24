@@ -22,6 +22,8 @@ public:
 
 	void IncreaseLevelIndex();
 
+	void InitializeData();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GameDate")
 	int32 TotalScore;
