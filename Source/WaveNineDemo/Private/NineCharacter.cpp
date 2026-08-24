@@ -1,7 +1,10 @@
 ﻿#include "NineCharacter.h"
 #include "NinePlayerController.h"
+#include "NineGameState.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Components/TextBlock.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -17,6 +20,10 @@ ANineCharacter::ANineCharacter()
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(SpringArm , USpringArmComponent::SocketName);
     Camera->bUsePawnControlRotation = false;
+
+    OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+    OverheadWidget->SetupAttachment(GetMesh());
+    OverheadWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
     NormalSpeed = 600.0f;
     SprintSpeedMultiplier = 1.7f;
@@ -87,12 +94,30 @@ float ANineCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& 
 {
     float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
     Health = FMath::Clamp(Health - DamageAmount, 0.f, MaxHealth);
+    UpdateOverheadHP();
 
     if (Health <= 0.f)
     {
-        //Death
+        OnDeath();
     }
     return ActualDamage;
+}
+
+void ANineCharacter::UpdateOverheadHP()
+{
+    if (!OverheadWidget) return;
+
+    if (UUserWidget* OverheadWidgetInstance = OverheadWidget->GetUserWidgetObject())
+    {
+        UTextBlock* OverheadHPText = Cast<UTextBlock>(OverheadWidgetInstance->GetWidgetFromName(TEXT("OverheadHP")));
+        OverheadHPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), Health, MaxHealth)));
+    }
+}
+
+void ANineCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+    UpdateOverheadHP();
 }
 
 void ANineCharacter::Tick(float DeltaTime)
@@ -160,8 +185,14 @@ void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ANineCharacter::Heal(float HealAmount)
 {
     Health = FMath::Clamp(Health + HealAmount, 0.f, MaxHealth);
+    UpdateOverheadHP();
 }
 
 void ANineCharacter::OnDeath()
 {
+    ANineGameState* NineGameState = GetWorld()->GetGameState<ANineGameState>();
+    if (NineGameState)
+    {
+        NineGameState->OnGameOver();
+    }
 }

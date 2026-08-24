@@ -145,6 +145,7 @@ void ANineGameState::OnGameOver()
     {
         if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(PlayerController))
         {
+            NinePlayerController->SetPause(true);
             NinePlayerController->ShowMainMenu(true);
         }
     }

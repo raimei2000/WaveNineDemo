@@ -6,6 +6,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UWidgetComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -18,8 +19,12 @@ public:
 
     UPROPERTY(VisibleAnywhere , BlueprintReadOnly , Category = "NineCharacter|Camera")
     USpringArmComponent* SpringArm;
+
     UPROPERTY(VisibleAnywhere , BlueprintReadOnly , Category = "NineCharacter|Camera")
     UCameraComponent* Camera;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+    UWidgetComponent* OverheadWidget;
 
 protected:
     UFUNCTION()
@@ -36,6 +41,10 @@ protected:
     void StopSprint(const FInputActionValue& Value);
 
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+    void UpdateOverheadHP();
+
+    virtual void BeginPlay() override;
 
     virtual void Tick(float DeltaTime) override;
 

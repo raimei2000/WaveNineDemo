@@ -20,6 +20,8 @@ public:
 
 	void UpdateHUD() const;
 
+	void OnGameOver();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game|Levels")
 	TArray<FName> LevelNames;
@@ -28,8 +30,6 @@ protected:
 	void StartLevel();
 
 	virtual void Tick(float DeltaTime) override;
-
-	void OnGameOver();
 
 private:
 	void EndLevel();

@@ -118,6 +118,7 @@ void ANinePlayerController::StartGame()
     }
 
     UGameplayStatics::OpenLevel(GetWorld(), FName("BasicLevel"));
+    SetPause(false);
 }
 
 void ANinePlayerController::BeginPlay()
