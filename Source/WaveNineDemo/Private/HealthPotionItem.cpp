@@ -9,6 +9,8 @@ AHealthPotionItem::AHealthPotionItem()
 
 void AHealthPotionItem::ActivateItem(AActor* Activator)
 {
+    Super::ActivateItem(Activator);
+
     if (Activator && Activator->ActorHasTag("Player"))
     {
         if (ANineCharacter* Player = Cast<ANineCharacter>(Activator))

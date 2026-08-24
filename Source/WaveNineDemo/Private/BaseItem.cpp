@@ -1,5 +1,7 @@
 ﻿#include "BaseItem.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ABaseItem::ABaseItem()
 {
@@ -33,6 +35,44 @@ void ABaseItem::OnItemEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
 
 void ABaseItem::ActivateItem(AActor* Activator)
 {
+	UParticleSystemComponent* Particle = nullptr;
+	 
+	if (PickupParticle)
+	{
+		Particle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			PickupParticle,
+			GetActorLocation(),
+			GetActorRotation(),
+			true
+		);
+	}
+
+	if (PickupSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			GetWorld(),
+			PickupSound,
+			GetActorLocation()
+		);
+	}
+
+	TWeakObjectPtr WeakParticle = Particle;
+	if (Particle)
+	{
+		FTimerHandle DestroyParticleTimerHandle;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			DestroyParticleTimerHandle,
+			[WeakParticle]()
+			{
+				if (UParticleSystemComponent* PSC = WeakParticle.Get())
+				PSC->DestroyComponent();
+			},
+			2.f,
+			false
+		);
+	}
 }
 
 FName ABaseItem::GetItemType() const

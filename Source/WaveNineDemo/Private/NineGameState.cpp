@@ -14,7 +14,7 @@ ANineGameState::ANineGameState()
 
     SpawnedCoinCount = 0;
     CollectedCoinCount = 0;
-    LevelDuration = 10.f;
+    LevelDuration = 20.f;
 }
 
 void ANineGameState::BeginPlay()
