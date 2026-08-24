@@ -89,6 +89,23 @@ void ANinePlayerController::ShowMainMenu(bool bIsRestart)
                     ButtonText->SetText(FText::FromString(TEXT("Start")));
                 }
             }
+
+            if (bIsRestart)
+            {
+                UFunction* PlayAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
+                if (PlayAnimFunc)
+                {
+                    MainMenuWidgetInstance->ProcessEvent(PlayAnimFunc, nullptr);
+                }
+
+                if (UTextBlock* TotalScoreText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("TotalScoreText"))))
+                {
+                    if (UNineGameInstance* NineGameInstance = Cast<UNineGameInstance>(UGameplayStatics::GetGameInstance(this)))
+                    {
+                        TotalScoreText->SetText(FText::FromString(FString::Printf(TEXT("Total Score: %d"), NineGameInstance->GetTotalScore())));
+                    }
+                }
+            }
         }
     }
 }
