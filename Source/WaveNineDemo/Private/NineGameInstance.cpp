@@ -25,3 +25,9 @@ void UNineGameInstance::IncreaseLevelIndex()
 {
     CurrentLevelIndex++;
 }
+
+void UNineGameInstance::InitializeData()
+{
+    CurrentLevelIndex = 0;
+    TotalScore = 0;
+}

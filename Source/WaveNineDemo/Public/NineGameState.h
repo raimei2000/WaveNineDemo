@@ -18,6 +18,8 @@ public:
 
 	void OnCoinCollected(int32 score);
 
+	void UpdateHUD() const;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game|Levels")
 	TArray<FName> LevelNames;
@@ -31,8 +33,6 @@ protected:
 
 private:
 	void EndLevel();
-
-	void UpdateHUD() const;
 
 private:
 	int32 SpawnedCoinCount;
