@@ -127,6 +127,12 @@ void ANineGameState::UpdateHUD() const
                     int32 Level = GameInstance->GetCurrentLevelIndex() + 1;
                     LevelText->SetText(FText::FromString(FString::Printf(TEXT("Level: %d"), Level)));
                 }
+
+                if (UTextBlock* WaveText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Wave"))))
+                {
+                    int32 Wave = GameInstance->GetCurrentWaveIndex() + 1;
+                    WaveText->SetText(FText::FromString(FString::Printf(TEXT("-Wave: %d"), Wave)));
+                }
             }
         }
     }
