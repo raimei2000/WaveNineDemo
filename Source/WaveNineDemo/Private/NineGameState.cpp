@@ -14,7 +14,7 @@ ANineGameState::ANineGameState()
 
     SpawnedCoinCount = 0;
     CollectedCoinCount = 0;
-    LevelDuration = 20.f;
+    WaveDuration = 20.f;
 }
 
 void ANineGameState::BeginPlay()
@@ -126,7 +126,7 @@ void ANineGameState::StartLevel()
         }
     }
 
-    GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndLevel, LevelDuration, false);
+    GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndLevel, WaveDuration, false);
     GetWorldTimerManager().SetTimer(HUDUpdateTimerHandle, this, &ANineGameState::UpdateHUD, 0.1f, true);
 }
 

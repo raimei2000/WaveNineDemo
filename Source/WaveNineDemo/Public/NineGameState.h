@@ -35,6 +35,9 @@ private:
 	void EndLevel();
 
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* WaveDurationTable;
+
 	int32 SpawnedCoinCount;
 
 	int32 CollectedCoinCount;
@@ -43,7 +46,7 @@ private:
 
 	FTimerHandle HUDUpdateTimerHandle;
 
-	float LevelDuration;
+	float WaveDuration;
 
 	int32 MaxLevelIndex;
 
