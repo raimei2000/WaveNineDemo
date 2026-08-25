@@ -56,7 +56,7 @@ void ANineGameState::OnCoinCollected(int32 score)
 
     if (SpawnedCoinCount <= CollectedCoinCount)
     {
-        EndLevel();
+        EndWave();
     }
 }
 
