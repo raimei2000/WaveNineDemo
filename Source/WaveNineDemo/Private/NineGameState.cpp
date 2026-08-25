@@ -16,6 +16,8 @@ ANineGameState::ANineGameState()
     SpawnedCoinCount = 0;
     CollectedCoinCount = 0;
     WaveDuration = 20.f;
+    NumberOfWaves = 0;
+    MaxLevelIndex = 0;
 }
 
 void ANineGameState::BeginPlay()
@@ -52,9 +54,7 @@ void ANineGameState::OnCoinCollected(int32 score)
 
 void ANineGameState::EndLevel()
 {
-    GetWorldTimerManager().ClearTimer(LevelTimerHandle);
-    GetWorldTimerManager().ClearTimer(HUDUpdateTimerHandle);
-
+    GameInstance->InitializeWaveIndex();
     if (GameInstance->GetCurrentLevelIndex() < MaxLevelIndex)
     {
         GameInstance->IncreaseLevelIndex();
@@ -70,15 +70,36 @@ void ANineGameState::EndLevel()
     }
 }
 
+void ANineGameState::EndWave()
+{
+    GetWorldTimerManager().ClearTimer(LevelTimerHandle);
+    GetWorldTimerManager().ClearTimer(HUDUpdateTimerHandle);
+
+    GameInstance->IncreaseWaveIndex();
+    if (GameInstance->GetCurrentWaveIndex() >= NumberOfWaves)
+    {
+        EndLevel();
+    }
+    else
+    {
+        if (LevelNames.IsValidIndex(GameInstance->GetCurrentLevelIndex()))
+        {
+            UGameplayStatics::OpenLevel(GetWorld(), LevelNames[GameInstance->GetCurrentLevelIndex()]);
+        }
+    }
+}
+
 void ANineGameState::SetWaveDuration()
 {
     if (!WaveDurationTable) return;
     TArray<FWaveDurationRow*> AllRows;
     WaveDurationTable->GetAllRows(TEXT("WaveDurationContext"), AllRows);
 
-    TArray<float> Durations = AllRows[GameInstance->GetCurrentLevelIndex()]->Duration;
-    WaveDuration = Durations[0];
+    TArray<float> CurrentLevelRow = AllRows[GameInstance->GetCurrentLevelIndex()]->Duration;
+    WaveDuration = CurrentLevelRow[GameInstance->GetCurrentWaveIndex()];
     UE_LOG(LogTemp, Warning, TEXT("Wave Duration Set to %.0f"), WaveDuration);
+
+    NumberOfWaves = CurrentLevelRow.Num();
 }
 
 void ANineGameState::UpdateHUD() const
@@ -140,7 +161,7 @@ void ANineGameState::StartLevel()
         }
     }
 
-    GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndLevel, WaveDuration, false);
+    GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndWave, WaveDuration, false);
     GetWorldTimerManager().SetTimer(HUDUpdateTimerHandle, this, &ANineGameState::UpdateHUD, 0.1f, true);
 }
 

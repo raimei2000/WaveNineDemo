@@ -38,6 +38,8 @@ protected:
 private:
 	void EndLevel();
 
+	void EndWave();
+
 	void SetWaveDuration();
 
 private:
@@ -52,6 +54,8 @@ private:
 	float WaveDuration;
 
 	int32 MaxLevelIndex;
+
+	int32 NumberOfWaves;
 
 	UNineGameInstance* GameInstance;
 };
