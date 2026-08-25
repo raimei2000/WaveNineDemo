@@ -40,4 +40,6 @@ public:
 	virtual void ActivateItem(AActor* Activator) override;
 
 	void Explode();
+
+	void SetMineSpec(float Damage, float Delay);
 };

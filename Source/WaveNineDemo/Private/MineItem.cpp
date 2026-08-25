@@ -82,3 +82,9 @@ void AMineItem::Explode()
 
 	DestroyItem();
 }
+
+void AMineItem::SetMineSpec(float Damage, float Delay)
+{
+	ExplosionDamage = Damage;
+	ExplosionDelay = Delay;
+}

@@ -7,6 +7,11 @@ AHealthPotionItem::AHealthPotionItem()
     ItemType = "HealthPotion";
 }
 
+void AHealthPotionItem::SetHealthPotionSpec(float Amount)
+{
+    HealAmount = Amount;
+}
+
 void AHealthPotionItem::ActivateItem(AActor* Activator)
 {
     Super::ActivateItem(Activator);

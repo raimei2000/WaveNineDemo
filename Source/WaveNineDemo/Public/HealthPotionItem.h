@@ -12,6 +12,8 @@ class WAVENINEDEMO_API AHealthPotionItem : public AMovableItem
 public:
 	AHealthPotionItem();
 
+	void SetHealthPotionSpec(float Amount);
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Heal")
 	float HealAmount;

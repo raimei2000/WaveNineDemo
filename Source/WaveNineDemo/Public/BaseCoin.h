@@ -12,6 +12,8 @@ class WAVENINEDEMO_API ABaseCoin : public AMovableItem
 public:
 	ABaseCoin();
 
+	void SetCoinSpec(int32 Amount);
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	int32 PointValue;

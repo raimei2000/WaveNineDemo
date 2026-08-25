@@ -2,8 +2,16 @@
 #include "SpawnVolume.h"
 #include "BaseItem.h"
 #include "BaseCoin.h"
+#include "BigCoinItem.h"
+#include "SmallCoinItem.h"
+#include "HealthPotionItem.h"
+#include "MineItem.h"
 #include "NineGameInstance.h"
 #include "WaveDurationRow.h"
+#include "BigCoinSpecRow.h"
+#include "SmallCoinSpecRow.h"
+#include "HealthPotionSpecRow.h"
+#include "MineSpecRow.h"
 #include "NinePlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
@@ -143,6 +151,15 @@ void ANineGameState::StartLevel()
     TArray<AActor*> Volumes;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), Volumes);
 
+    const int32 LevelIndex = GameInstance->GetCurrentLevelIndex();
+    const int32 WaveIndex = GameInstance->GetCurrentWaveIndex();
+
+    const FName RowName = *FString::Printf(TEXT("Level%d"), LevelIndex + 1);
+    const FBigCoinSpecRow* BigCoinRow = BigCoinSpecTable->FindRow<FBigCoinSpecRow>(RowName, TEXT("BigCoinSpec"));
+    const FSmallCoinSpecRow* SmallCoinRow = SmallCoinSpecTable->FindRow<FSmallCoinSpecRow>(RowName, TEXT("SmallCoinSpec"));
+    const FHealthPotionSpecRow* HealthPotionRow = HealthPotionSpecTable->FindRow<FHealthPotionSpecRow>(RowName, TEXT("HealthPotionSpec"));
+    const FMineSpecRow* MineRow = MineSpecTable->FindRow<FMineSpecRow>(RowName, TEXT("MineSpec"));
+
     if (Volumes.Num() > 0) {
         const int32 ItemToSpawn = 40;
 
@@ -154,6 +171,28 @@ void ANineGameState::StartLevel()
                 if (SpawnedItem && SpawnedItem->IsA(ABaseCoin::StaticClass()))
                 {
                     SpawnedCoinCount++;
+                }
+
+                // Level, Wave별 아이템 능력치 설정
+                if (SpawnedItem && SpawnedItem->IsA(ABigCoinItem::StaticClass()))
+                {
+                    ABaseCoin* BigCoin = Cast<ABaseCoin>(SpawnedItem);
+                    BigCoin->SetCoinSpec(BigCoinRow->PointValuePerWave[WaveIndex]);
+                }
+                if (SpawnedItem && SpawnedItem->IsA(ASmallCoinItem::StaticClass()))
+                {
+                    ABaseCoin* SmallCoin = Cast<ABaseCoin>(SpawnedItem);
+                    SmallCoin->SetCoinSpec(SmallCoinRow->PointValuePerWave[WaveIndex]);
+                }
+                if (SpawnedItem && SpawnedItem->IsA(AHealthPotionItem::StaticClass()))
+                {
+                    AHealthPotionItem* HealthPotion = Cast<AHealthPotionItem>(SpawnedItem);
+                    HealthPotion->SetHealthPotionSpec(HealthPotionRow->HealAmountPerWave[WaveIndex]);
+                }
+                if (SpawnedItem && SpawnedItem->IsA(AMineItem::StaticClass()))
+                {
+                    AMineItem* Mine = Cast<AMineItem>(SpawnedItem);
+                    Mine->SetMineSpec(MineRow->DamagePerWave[WaveIndex], MineRow->ExplosionDelayPerWave[WaveIndex]);
                 }
             }
         }

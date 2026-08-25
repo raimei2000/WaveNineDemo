@@ -26,6 +26,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
 	UDataTable* WaveDurationTable;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* BigCoinSpecTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* SmallCoinSpecTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* HealthPotionSpecTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* MineSpecTable;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game|Levels")
 	TArray<FName> LevelNames;
