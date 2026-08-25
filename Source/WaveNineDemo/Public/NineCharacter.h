@@ -23,9 +23,6 @@ public:
     UPROPERTY(VisibleAnywhere , BlueprintReadOnly , Category = "NineCharacter|Camera")
     UCameraComponent* Camera;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-    UWidgetComponent* OverheadWidget;
-
 protected:
     UFUNCTION()
     void Move(const FInputActionValue& Value);
@@ -42,7 +39,7 @@ protected:
 
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-    void UpdateOverheadHP();
+    void UpdateHPUI();
 
     virtual void BeginPlay() override;
 

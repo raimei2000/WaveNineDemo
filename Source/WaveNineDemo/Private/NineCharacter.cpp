@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -20,10 +21,6 @@ ANineCharacter::ANineCharacter()
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(SpringArm , USpringArmComponent::SocketName);
     Camera->bUsePawnControlRotation = false;
-
-    OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
-    OverheadWidget->SetupAttachment(GetMesh());
-    OverheadWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
     NormalSpeed = 600.0f;
     SprintSpeedMultiplier = 1.7f;
@@ -94,7 +91,7 @@ float ANineCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& 
 {
     float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
     Health = FMath::Clamp(Health - DamageAmount, 0.f, MaxHealth);
-    UpdateOverheadHP();
+    UpdateHPUI();
 
     if (Health <= 0.f)
     {
@@ -103,21 +100,28 @@ float ANineCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& 
     return ActualDamage;
 }
 
-void ANineCharacter::UpdateOverheadHP()
+void ANineCharacter::UpdateHPUI()
 {
-    if (!OverheadWidget) return;
-
-    if (UUserWidget* OverheadWidgetInstance = OverheadWidget->GetUserWidgetObject())
+    if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(GetWorld()->GetFirstPlayerController()))
     {
-        UTextBlock* OverheadHPText = Cast<UTextBlock>(OverheadWidgetInstance->GetWidgetFromName(TEXT("OverheadHP")));
-        OverheadHPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), Health, MaxHealth)));
+        if (UUserWidget* HUD = NinePlayerController->GetHUDWidget())
+        {
+            if (UProgressBar* HPBar = Cast<UProgressBar>(HUD->GetWidgetFromName(TEXT("HPBar"))))
+            {
+                HPBar->SetPercent(Health / MaxHealth);
+            }
+            if (UTextBlock* HPPercent = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("HPPercent"))))
+            {
+                HPPercent->SetText(FText::FromString(FString::Printf(TEXT("%.0f%%"), Health)));
+            }
+        }
     }
 }
 
 void ANineCharacter::BeginPlay()
 {
     Super::BeginPlay();
-    UpdateOverheadHP();
+    UpdateHPUI();
 }
 
 float ANineCharacter::GetCharacterHealth() const
@@ -177,7 +181,7 @@ void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ANineCharacter::Heal(float HealAmount)
 {
     Health = FMath::Clamp(Health + HealAmount, 0.f, MaxHealth);
-    UpdateOverheadHP();
+    UpdateHPUI();
 }
 
 void ANineCharacter::OnDeath()
