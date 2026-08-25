@@ -22,6 +22,10 @@ public:
 
 	void OnGameOver();
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* WaveDurationTable;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game|Levels")
 	TArray<FName> LevelNames;
@@ -34,10 +38,9 @@ protected:
 private:
 	void EndLevel();
 
-private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
-	UDataTable* WaveDurationTable;
+	void SetWaveDuration();
 
+private:
 	int32 SpawnedCoinCount;
 
 	int32 CollectedCoinCount;

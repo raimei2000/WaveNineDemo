@@ -3,6 +3,7 @@
 #include "BaseItem.h"
 #include "BaseCoin.h"
 #include "NineGameInstance.h"
+#include "WaveDurationRow.h"
 #include "NinePlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
@@ -28,6 +29,8 @@ void ANineGameState::BeginPlay()
             GameInstance = NineGameInstance;
         }
     }
+
+    SetWaveDuration();
 
     StartLevel();
 
@@ -65,6 +68,17 @@ void ANineGameState::EndLevel()
         OnGameOver();
         return;
     }
+}
+
+void ANineGameState::SetWaveDuration()
+{
+    if (!WaveDurationTable) return;
+    TArray<FWaveDurationRow*> AllRows;
+    WaveDurationTable->GetAllRows(TEXT("WaveDurationContext"), AllRows);
+
+    TArray<float> Durations = AllRows[GameInstance->GetCurrentLevelIndex()]->Duration;
+    WaveDuration = Durations[0];
+    UE_LOG(LogTemp, Warning, TEXT("Wave Duration Set to %.0f"), WaveDuration);
 }
 
 void ANineGameState::UpdateHUD() const
