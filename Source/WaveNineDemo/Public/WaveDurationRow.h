@@ -10,5 +10,5 @@ struct FWaveDurationRow : public FTableRowBase
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TArray<int32> Duration;
+    TArray<float> Duration;
 };
