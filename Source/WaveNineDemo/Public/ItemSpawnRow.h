@@ -4,6 +4,8 @@
 #include "BaseItem.h"
 #include "ItemSpawnRow.generated.h"
 
+struct FFloatArrayRow;
+
 USTRUCT(BlueprintType)
 struct FItemSpawnRow : public FTableRowBase
 {
@@ -17,5 +19,5 @@ public:
 	TSubclassOf<ABaseItem> ItemClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float SpawnChance;
+	TArray<FFloatArrayRow> SpawnChance;
 };

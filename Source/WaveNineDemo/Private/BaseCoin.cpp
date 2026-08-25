@@ -8,6 +8,11 @@ ABaseCoin::ABaseCoin()
     ItemType = "DefaultCoin";
 }
 
+void ABaseCoin::SetCoinSpec(int32 Amount)
+{
+    PointValue = Amount;
+}
+
 void ABaseCoin::ActivateItem(AActor* Activator)
 {
     Super::ActivateItem(Activator);

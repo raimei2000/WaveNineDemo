@@ -22,6 +22,22 @@ public:
 
 	void OnGameOver();
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* WaveDurationTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* BigCoinSpecTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* SmallCoinSpecTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* HealthPotionSpecTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
+	UDataTable* MineSpecTable;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game|Levels")
 	TArray<FName> LevelNames;
@@ -34,6 +50,10 @@ protected:
 private:
 	void EndLevel();
 
+	void EndWave();
+
+	void SetWaveDuration();
+
 private:
 	int32 SpawnedCoinCount;
 
@@ -43,9 +63,11 @@ private:
 
 	FTimerHandle HUDUpdateTimerHandle;
 
-	float LevelDuration;
+	float WaveDuration;
 
 	int32 MaxLevelIndex;
+
+	int32 NumberOfWaves;
 
 	UNineGameInstance* GameInstance;
 };

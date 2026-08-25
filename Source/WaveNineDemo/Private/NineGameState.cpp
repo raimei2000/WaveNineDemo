@@ -2,7 +2,16 @@
 #include "SpawnVolume.h"
 #include "BaseItem.h"
 #include "BaseCoin.h"
+#include "BigCoinItem.h"
+#include "SmallCoinItem.h"
+#include "HealthPotionItem.h"
+#include "MineItem.h"
 #include "NineGameInstance.h"
+#include "WaveDurationRow.h"
+#include "BigCoinSpecRow.h"
+#include "SmallCoinSpecRow.h"
+#include "HealthPotionSpecRow.h"
+#include "MineSpecRow.h"
 #include "NinePlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
@@ -14,7 +23,9 @@ ANineGameState::ANineGameState()
 
     SpawnedCoinCount = 0;
     CollectedCoinCount = 0;
-    LevelDuration = 20.f;
+    WaveDuration = 20.f;
+    NumberOfWaves = 0;
+    MaxLevelIndex = 0;
 }
 
 void ANineGameState::BeginPlay()
@@ -28,6 +39,8 @@ void ANineGameState::BeginPlay()
             GameInstance = NineGameInstance;
         }
     }
+
+    SetWaveDuration();
 
     StartLevel();
 
@@ -43,15 +56,13 @@ void ANineGameState::OnCoinCollected(int32 score)
 
     if (SpawnedCoinCount <= CollectedCoinCount)
     {
-        EndLevel();
+        EndWave();
     }
 }
 
 void ANineGameState::EndLevel()
 {
-    GetWorldTimerManager().ClearTimer(LevelTimerHandle);
-    GetWorldTimerManager().ClearTimer(HUDUpdateTimerHandle);
-
+    GameInstance->InitializeWaveIndex();
     if (GameInstance->GetCurrentLevelIndex() < MaxLevelIndex)
     {
         GameInstance->IncreaseLevelIndex();
@@ -65,6 +76,34 @@ void ANineGameState::EndLevel()
         OnGameOver();
         return;
     }
+}
+
+void ANineGameState::EndWave()
+{
+    GetWorldTimerManager().ClearTimer(LevelTimerHandle);
+    GetWorldTimerManager().ClearTimer(HUDUpdateTimerHandle);
+
+    GameInstance->IncreaseWaveIndex();
+    if (GameInstance->GetCurrentWaveIndex() >= NumberOfWaves)
+    {
+        EndLevel();
+    }
+    else
+    {
+        if (LevelNames.IsValidIndex(GameInstance->GetCurrentLevelIndex()))
+        {
+            UGameplayStatics::OpenLevel(GetWorld(), LevelNames[GameInstance->GetCurrentLevelIndex()]);
+        }
+    }
+}
+
+void ANineGameState::SetWaveDuration()
+{
+    if (!WaveDurationTable) return;
+    const FName RowName = *FString::Printf(TEXT("Level%d"), GameInstance->GetCurrentLevelIndex() + 1);
+    FWaveDurationRow* CurrentLevelRow = WaveDurationTable->FindRow<FWaveDurationRow>(RowName, TEXT("WaveDuration"));
+    WaveDuration = CurrentLevelRow->Duration[GameInstance->GetCurrentWaveIndex()];
+    NumberOfWaves = CurrentLevelRow->Duration.Num();
 }
 
 void ANineGameState::UpdateHUD() const
@@ -92,6 +131,12 @@ void ANineGameState::UpdateHUD() const
                     int32 Level = GameInstance->GetCurrentLevelIndex() + 1;
                     LevelText->SetText(FText::FromString(FString::Printf(TEXT("Level: %d"), Level)));
                 }
+
+                if (UTextBlock* WaveText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Wave"))))
+                {
+                    int32 Wave = GameInstance->GetCurrentWaveIndex() + 1;
+                    WaveText->SetText(FText::FromString(FString::Printf(TEXT("-Wave: %d"), Wave)));
+                }
             }
         }
     }
@@ -102,6 +147,15 @@ void ANineGameState::StartLevel()
     TArray<AActor*> Volumes;
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), Volumes);
 
+    const int32 LevelIndex = GameInstance->GetCurrentLevelIndex();
+    const int32 WaveIndex = GameInstance->GetCurrentWaveIndex();
+
+    const FName RowName = *FString::Printf(TEXT("Level%d"), LevelIndex + 1);
+    const FBigCoinSpecRow* BigCoinRow = BigCoinSpecTable->FindRow<FBigCoinSpecRow>(RowName, TEXT("BigCoinSpec"));
+    const FSmallCoinSpecRow* SmallCoinRow = SmallCoinSpecTable->FindRow<FSmallCoinSpecRow>(RowName, TEXT("SmallCoinSpec"));
+    const FHealthPotionSpecRow* HealthPotionRow = HealthPotionSpecTable->FindRow<FHealthPotionSpecRow>(RowName, TEXT("HealthPotionSpec"));
+    const FMineSpecRow* MineRow = MineSpecTable->FindRow<FMineSpecRow>(RowName, TEXT("MineSpec"));
+
     if (Volumes.Num() > 0) {
         const int32 ItemToSpawn = 40;
 
@@ -109,10 +163,32 @@ void ANineGameState::StartLevel()
         {
             if (ASpawnVolume* Volume = Cast<ASpawnVolume>(Volumes[0]))
             {
-                ABaseItem* SpawnedItem = Volume->RandomSpawnItem();
+                ABaseItem* SpawnedItem = Volume->RandomSpawnItem(LevelIndex, WaveIndex);
                 if (SpawnedItem && SpawnedItem->IsA(ABaseCoin::StaticClass()))
                 {
                     SpawnedCoinCount++;
+                }
+
+                // Level, Wave별 아이템 능력치 설정
+                if (SpawnedItem && SpawnedItem->IsA(ABigCoinItem::StaticClass()))
+                {
+                    ABaseCoin* BigCoin = Cast<ABaseCoin>(SpawnedItem);
+                    BigCoin->SetCoinSpec(BigCoinRow->PointValuePerWave[WaveIndex]);
+                }
+                if (SpawnedItem && SpawnedItem->IsA(ASmallCoinItem::StaticClass()))
+                {
+                    ABaseCoin* SmallCoin = Cast<ABaseCoin>(SpawnedItem);
+                    SmallCoin->SetCoinSpec(SmallCoinRow->PointValuePerWave[WaveIndex]);
+                }
+                if (SpawnedItem && SpawnedItem->IsA(AHealthPotionItem::StaticClass()))
+                {
+                    AHealthPotionItem* HealthPotion = Cast<AHealthPotionItem>(SpawnedItem);
+                    HealthPotion->SetHealthPotionSpec(HealthPotionRow->HealAmountPerWave[WaveIndex]);
+                }
+                if (SpawnedItem && SpawnedItem->IsA(AMineItem::StaticClass()))
+                {
+                    AMineItem* Mine = Cast<AMineItem>(SpawnedItem);
+                    Mine->SetMineSpec(MineRow->DamagePerWave[WaveIndex], MineRow->ExplosionDelayPerWave[WaveIndex]);
                 }
             }
         }
@@ -126,7 +202,7 @@ void ANineGameState::StartLevel()
         }
     }
 
-    GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndLevel, LevelDuration, false);
+    GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndWave, WaveDuration, false);
     GetWorldTimerManager().SetTimer(HUDUpdateTimerHandle, this, &ANineGameState::UpdateHUD, 0.1f, true);
 }
 

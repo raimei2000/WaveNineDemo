@@ -18,16 +18,26 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetCurrentLevelIndex() const;
 
+	UFUNCTION(BlueprintCallable)
+	int32 GetCurrentWaveIndex() const;
+
 	void AddTotalScore(int32 Amount);
 
 	void IncreaseLevelIndex();
 
 	void InitializeData();
 
+	void IncreaseWaveIndex();
+
+	void InitializeWaveIndex();
+
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GameDate")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GameData")
 	int32 TotalScore;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GameDate")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GameData")
 	int32 CurrentLevelIndex;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GameData")
+	int32 CurrentWaveIndex;
 };
