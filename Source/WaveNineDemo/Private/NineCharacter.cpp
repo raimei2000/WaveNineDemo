@@ -10,7 +10,7 @@
 
 ANineCharacter::ANineCharacter()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false;
 
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
     SpringArm->SetupAttachment(RootComponent);
@@ -118,14 +118,6 @@ void ANineCharacter::BeginPlay()
 {
     Super::BeginPlay();
     UpdateOverheadHP();
-}
-
-void ANineCharacter::Tick(float DeltaTime)
-{
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(2, 0.f, FColor::Red, FString::Printf(TEXT("Player HP: %.0f"), Health));
-    }
 }
 
 float ANineCharacter::GetCharacterHealth() const
