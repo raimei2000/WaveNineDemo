@@ -100,14 +100,10 @@ void ANineGameState::EndWave()
 void ANineGameState::SetWaveDuration()
 {
     if (!WaveDurationTable) return;
-    TArray<FWaveDurationRow*> AllRows;
-    WaveDurationTable->GetAllRows(TEXT("WaveDurationContext"), AllRows);
-
-    TArray<float> CurrentLevelRow = AllRows[GameInstance->GetCurrentLevelIndex()]->Duration;
-    WaveDuration = CurrentLevelRow[GameInstance->GetCurrentWaveIndex()];
-    UE_LOG(LogTemp, Warning, TEXT("Wave Duration Set to %.0f"), WaveDuration);
-
-    NumberOfWaves = CurrentLevelRow.Num();
+    const FName RowName = *FString::Printf(TEXT("Level%d"), GameInstance->GetCurrentLevelIndex() + 1);
+    FWaveDurationRow* CurrentLevelRow = WaveDurationTable->FindRow<FWaveDurationRow>(RowName, TEXT("WaveDuration"));
+    WaveDuration = CurrentLevelRow->Duration[GameInstance->GetCurrentWaveIndex()];
+    NumberOfWaves = CurrentLevelRow->Duration.Num();
 }
 
 void ANineGameState::UpdateHUD() const
