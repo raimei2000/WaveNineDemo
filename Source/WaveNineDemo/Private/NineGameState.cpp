@@ -163,7 +163,7 @@ void ANineGameState::StartLevel()
         {
             if (ASpawnVolume* Volume = Cast<ASpawnVolume>(Volumes[0]))
             {
-                ABaseItem* SpawnedItem = Volume->RandomSpawnItem();
+                ABaseItem* SpawnedItem = Volume->RandomSpawnItem(LevelIndex, WaveIndex);
                 if (SpawnedItem && SpawnedItem->IsA(ABaseCoin::StaticClass()))
                 {
                     SpawnedCoinCount++;

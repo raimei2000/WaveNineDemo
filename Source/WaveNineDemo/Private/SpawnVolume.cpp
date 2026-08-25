@@ -1,5 +1,6 @@
 ﻿#include "SpawnVolume.h"
 #include "ItemSpawnRow.h"
+#include "FloatArrayRow.h"
 #include "Components/BoxComponent.h"
 
 ASpawnVolume::ASpawnVolume()
@@ -40,7 +41,7 @@ FVector ASpawnVolume::GetRandomPointInVolume() const
 		FMath::FRandRange(OriginLocation.Z - SizeZ, OriginLocation.Z + SizeZ));
 }
 
-FItemSpawnRow* ASpawnVolume::GetRandomItem() const
+FItemSpawnRow* ASpawnVolume::GetRandomItem(int32 LevelIndex, int32 WaveIndex) const
 {
 	if (!ItemSpawnTable) return nullptr;
 
@@ -50,14 +51,14 @@ FItemSpawnRow* ASpawnVolume::GetRandomItem() const
 	if (AllRows.IsEmpty()) return nullptr;
 
 	float TotalChance = 0.f;
-	for (const auto Row : AllRows) TotalChance += Row->SpawnChance;
+	for (const auto Row : AllRows) TotalChance += Row->SpawnChance[LevelIndex][WaveIndex];
 
 	const float RandNumber = FMath::FRandRange(0.f, TotalChance);
 	float AccumulateChance = 0.f;
 
 	for (const auto Row : AllRows)
 	{
-		AccumulateChance += Row->SpawnChance;
+		AccumulateChance += Row->SpawnChance[LevelIndex][WaveIndex];
 		if (RandNumber <= AccumulateChance)
 		{
 			return Row;
@@ -79,9 +80,9 @@ ABaseItem* ASpawnVolume::SpawnItem(TSubclassOf<ABaseItem> ItemClass) const
 	return SpawnedItem;
 }
 
-ABaseItem* ASpawnVolume::RandomSpawnItem() const
+ABaseItem* ASpawnVolume::RandomSpawnItem(int32 LevelIndex, int32 WaveIndex) const
 {
-	if (const FItemSpawnRow* SelectedRow = GetRandomItem())
+	if (const FItemSpawnRow* SelectedRow = GetRandomItem(LevelIndex, WaveIndex))
 	{
 		if (UClass* ActualClass = SelectedRow->ItemClass.Get())
 		{

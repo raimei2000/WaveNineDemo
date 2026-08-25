@@ -16,7 +16,7 @@ class WAVENINEDEMO_API ASpawnVolume : public AActor
 public:	
 	ASpawnVolume();
 
-	ABaseItem* RandomSpawnItem() const;
+	ABaseItem* RandomSpawnItem(int32 LevelIndex, int32 WaveIndex) const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -33,7 +33,7 @@ protected:
 
 	FVector GetRandomPointInVolume() const;
 
-	FItemSpawnRow* GetRandomItem() const;
+	FItemSpawnRow* GetRandomItem(int32 LevelIndex, int32 WaveIndex) const;
 
 	ABaseItem* SpawnItem(TSubclassOf<ABaseItem> ItemClass) const;
 
