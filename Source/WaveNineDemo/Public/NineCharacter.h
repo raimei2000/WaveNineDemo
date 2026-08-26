@@ -41,6 +41,8 @@ protected:
 
     void UpdateHPUI();
 
+    void UpdateDebuffUI();
+
     virtual void BeginPlay() override;
 
 public:

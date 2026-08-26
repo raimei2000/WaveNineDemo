@@ -6,6 +6,7 @@
 #include "Components/WidgetComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
+#include "Components/VerticalBox.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -72,7 +73,7 @@ void ANineCharacter::StopJump(const FInputActionValue& Value)
 
 void ANineCharacter::Look(const FInputActionValue& Value)
 {
-    FVector2D LookInput = Value.Get<FVector2d>();
+    FVector2D LookInput = Value.Get<FVector2D>();
     AddControllerYawInput(LookInput.X);
     AddControllerPitchInput(LookInput.Y);
 }
@@ -109,7 +110,7 @@ float ANineCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& 
 
 void ANineCharacter::UpdateHPUI()
 {
-    if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(GetWorld()->GetFirstPlayerController()))
+    if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(GetController()))
     {
         if (UUserWidget* HUD = NinePlayerController->GetHUDWidget())
         {
@@ -120,6 +121,33 @@ void ANineCharacter::UpdateHPUI()
             if (UTextBlock* HPPercent = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("HPPercent"))))
             {
                 HPPercent->SetText(FText::FromString(FString::Printf(TEXT("%.0f%%"), Health)));
+            }
+        }
+    }
+}
+
+void ANineCharacter::UpdateDebuffUI()
+{
+    if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(GetController()))
+    {
+        if (UUserWidget* HUD = NinePlayerController->GetHUDWidget())
+        {
+            if (UVerticalBox* SlowBox = Cast<UVerticalBox>(HUD->GetWidgetFromName(TEXT("SlowVerticalBox"))))
+            {
+                UE_LOG(LogTemp, Warning, TEXT("VerticalBox Found"));
+                if (bSlow)
+                {
+                    if (UTextBlock* SlowStackText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("SlowStack"))))
+                    {
+                        SlowStackText->SetText(FText::FromString(FString::Printf(TEXT("x%d"), SlowStack)));
+                    }
+                    SlowBox->SetVisibility(ESlateVisibility::HitTestInvisible);
+                }
+                else
+                {
+
+                    SlowBox->SetVisibility(ESlateVisibility::Collapsed);
+                }
             }
         }
     }
@@ -203,6 +231,8 @@ void ANineCharacter::ActivateSlow()
 
     bSlow = true;
     SlowStack++;
+
+    UpdateDebuffUI();
 }
 
 void ANineCharacter::DeactivateSlow()
@@ -212,6 +242,8 @@ void ANineCharacter::DeactivateSlow()
 
     bSlow = false;
     SlowStack = 0;
+
+    UpdateDebuffUI();
 }
 
 void ANineCharacter::OnDeath()
