@@ -47,6 +47,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void StartGame();
+
+	UFUNCTION(BlueprintCallable, Category = "Menu")
+	void QuitGame();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HUD")
 	UUserWidget* HUDWidgetInstance;
