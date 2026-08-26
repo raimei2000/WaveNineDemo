@@ -79,6 +79,7 @@ void ANineCharacter::Look(const FInputActionValue& Value)
 
 void ANineCharacter::StartSprint(const FInputActionValue& Value)
 {
+    if (bSlow) return;
     if (GetCharacterMovement())
     {
         GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed * SprintSpeedMultiplier;
