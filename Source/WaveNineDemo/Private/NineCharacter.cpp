@@ -184,6 +184,25 @@ void ANineCharacter::Heal(float HealAmount)
     UpdateHPUI();
 }
 
+void ANineCharacter::ActivateSlow()
+{
+    GetWorldTimerManager().ClearTimer(SlowTimerHandle);
+    GetWorldTimerManager().SetTimer(SlowTimerHandle, this, &ANineCharacter::DeactivateSlow, 2.5f, false);
+
+    GetCharacterMovement()->MaxWalkSpeed *= 0.8;
+    SprintSpeed = GetCharacterMovement()->MaxWalkSpeed * SprintSpeedMultiplier;
+
+    bSlow = true;
+}
+
+void ANineCharacter::DeactivateSlow()
+{
+    GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+    SprintSpeed = GetCharacterMovement()->MaxWalkSpeed * SprintSpeedMultiplier;
+
+    bSlow = false;
+}
+
 void ANineCharacter::OnDeath()
 {
     ANineGameState* NineGameState = GetWorld()->GetGameState<ANineGameState>();

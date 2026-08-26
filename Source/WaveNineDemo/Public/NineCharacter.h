@@ -51,6 +51,10 @@ public:
 
     void Heal(float HealAmount);
 
+    void ActivateSlow();
+
+    void DeactivateSlow();
+
 private:
     void OnDeath();
 
@@ -62,4 +66,8 @@ private:
     float Health;
     float MaxHealth;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NineCharacter|Debuff")
+    float SlowDuration;
+    bool bSlow;
+    FTimerHandle SlowTimerHandle;
 };
