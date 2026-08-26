@@ -60,14 +60,21 @@ private:
 
 private:
     float NormalSpeed;
+    float CurrentSpeed;
     float SprintSpeedMultiplier;
     float SprintSpeed;
 
     float Health;
     float MaxHealth;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NineCharacter|Debuff")
+    // slow debuff
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Slow")
     float SlowDuration;
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Slow")
+    float SlowFactor;
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Slow")
+    int32 MaxSlowStack;
+    int32 SlowStack;
     bool bSlow;
     FTimerHandle SlowTimerHandle;
 };

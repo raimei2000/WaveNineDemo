@@ -23,8 +23,14 @@ ANineCharacter::ANineCharacter()
     Camera->bUsePawnControlRotation = false;
 
     NormalSpeed = 600.0f;
+    CurrentSpeed = NormalSpeed;
     SprintSpeedMultiplier = 1.7f;
     SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
+
+    SlowDuration = 2.5f;
+    SlowFactor = 0.7f;
+    MaxSlowStack = 3;
+    SlowStack = 0;
 
     GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
@@ -75,7 +81,7 @@ void ANineCharacter::StartSprint(const FInputActionValue& Value)
 {
     if (GetCharacterMovement())
     {
-        GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+        GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed * SprintSpeedMultiplier;
     }
 }
 
@@ -83,7 +89,7 @@ void ANineCharacter::StopSprint(const FInputActionValue& Value)
 {
     if (GetCharacterMovement())
     {
-        GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+        GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
     }
 }
 
@@ -187,20 +193,24 @@ void ANineCharacter::Heal(float HealAmount)
 void ANineCharacter::ActivateSlow()
 {
     GetWorldTimerManager().ClearTimer(SlowTimerHandle);
-    GetWorldTimerManager().SetTimer(SlowTimerHandle, this, &ANineCharacter::DeactivateSlow, 2.5f, false);
+    GetWorldTimerManager().SetTimer(SlowTimerHandle, this, &ANineCharacter::DeactivateSlow, SlowDuration, false);
 
-    GetCharacterMovement()->MaxWalkSpeed *= 0.8;
-    SprintSpeed = GetCharacterMovement()->MaxWalkSpeed * SprintSpeedMultiplier;
+    if (SlowStack >= MaxSlowStack) return;
+
+    CurrentSpeed *= SlowFactor;
+    GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
 
     bSlow = true;
+    SlowStack++;
 }
 
 void ANineCharacter::DeactivateSlow()
 {
-    GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
-    SprintSpeed = GetCharacterMovement()->MaxWalkSpeed * SprintSpeedMultiplier;
+    CurrentSpeed = NormalSpeed;
+    GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
 
     bSlow = false;
+    SlowStack = 0;
 }
 
 void ANineCharacter::OnDeath()
