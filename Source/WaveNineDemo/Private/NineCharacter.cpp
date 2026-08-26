@@ -14,9 +14,10 @@ ANineCharacter::ANineCharacter()
 {
     PrimaryActorTick.bCanEverTick = false;
 
+    DefaultSpringArmLength = 300.f;
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
     SpringArm->SetupAttachment(RootComponent);
-    SpringArm->TargetArmLength = 300.0f;
+    SpringArm->TargetArmLength = DefaultSpringArmLength;
     SpringArm->bUsePawnControlRotation = true;
 
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -32,6 +33,11 @@ ANineCharacter::ANineCharacter()
     SlowFactor = 0.7f;
     MaxSlowStack = 3;
     SlowStack = 0;
+    bSlow = false;
+
+    BlindDuration = 3.f;
+    bBlind = false;
+    DebuffSpringArmLength = 100.f;
 
     GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
@@ -134,7 +140,6 @@ void ANineCharacter::UpdateDebuffUI()
         {
             if (UVerticalBox* SlowBox = Cast<UVerticalBox>(HUD->GetWidgetFromName(TEXT("SlowVerticalBox"))))
             {
-                UE_LOG(LogTemp, Warning, TEXT("VerticalBox Found"));
                 if (bSlow)
                 {
                     if (UTextBlock* SlowStackText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("SlowStack"))))
@@ -147,6 +152,18 @@ void ANineCharacter::UpdateDebuffUI()
                 {
 
                     SlowBox->SetVisibility(ESlateVisibility::Collapsed);
+                }
+            }
+
+            if (UWidget* BlindImage = HUD->GetWidgetFromName(TEXT("BlindImage")))
+            {
+                if (bBlind)
+                {
+                    BlindImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+                }
+                else
+                {
+                    BlindImage->SetVisibility(ESlateVisibility::Hidden);
                 }
             }
         }
@@ -242,6 +259,25 @@ void ANineCharacter::DeactivateSlow()
 
     bSlow = false;
     SlowStack = 0;
+
+    UpdateDebuffUI();
+}
+
+void ANineCharacter::ActivateBlind()
+{
+    GetWorldTimerManager().ClearTimer(BlindTimerHandle);
+    GetWorldTimerManager().SetTimer(BlindTimerHandle, this, &ANineCharacter::DeactivateBlind, BlindDuration, false);
+
+    SpringArm->TargetArmLength = DebuffSpringArmLength;
+    bBlind = true;
+
+    UpdateDebuffUI();
+}
+
+void ANineCharacter::DeactivateBlind()
+{
+    SpringArm->TargetArmLength = DefaultSpringArmLength;
+    bBlind = false;
 
     UpdateDebuffUI();
 }

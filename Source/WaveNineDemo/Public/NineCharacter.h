@@ -57,10 +57,16 @@ public:
 
     void DeactivateSlow();
 
+    void ActivateBlind();
+
+    void DeactivateBlind();
+
 private:
     void OnDeath();
 
 private:
+    float DefaultSpringArmLength;
+
     float NormalSpeed;
     float CurrentSpeed;
     float SprintSpeedMultiplier;
@@ -79,4 +85,12 @@ private:
     int32 SlowStack;
     bool bSlow;
     FTimerHandle SlowTimerHandle;
+
+    // blind debuff
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Blind")
+    float BlindDuration;
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Blind")
+    float DebuffSpringArmLength;
+    bool bBlind;
+    FTimerHandle BlindTimerHandle;
 };
