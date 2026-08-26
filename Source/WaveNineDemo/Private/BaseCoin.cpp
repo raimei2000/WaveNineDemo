@@ -1,0 +1,32 @@
+﻿#include "BaseCoin.h"
+#include "NineGameState.h"
+#include "Engine/World.h"
+
+ABaseCoin::ABaseCoin()
+{
+    PointValue = 0;
+    ItemType = "DefaultCoin";
+}
+
+void ABaseCoin::SetCoinSpec(int32 Amount)
+{
+    PointValue = Amount;
+}
+
+void ABaseCoin::ActivateItem(AActor* Activator)
+{
+    Super::ActivateItem(Activator);
+
+    if (Activator && Activator->ActorHasTag("Player"))
+    {
+        if (UWorld* World = GetWorld())
+        {
+            if (ANineGameState* GameState = World->GetGameState<ANineGameState>())
+            {
+                GameState->OnCoinCollected(PointValue);
+            }
+        }
+
+        DestroyItem();
+    }
+}
