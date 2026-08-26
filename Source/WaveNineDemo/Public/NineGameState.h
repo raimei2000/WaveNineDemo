@@ -45,8 +45,6 @@ protected:
 protected:
 	void StartLevel();
 
-	virtual void Tick(float DeltaTime) override;
-
 private:
 	void EndLevel();
 

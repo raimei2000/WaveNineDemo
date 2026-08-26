@@ -5,6 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 ANinePlayerController::ANinePlayerController() :
     InputMappingContext(nullptr),
@@ -119,6 +120,11 @@ void ANinePlayerController::StartGame()
 
     UGameplayStatics::OpenLevel(GetWorld(), FName("BasicLevel"));
     SetPause(false);
+}
+
+void ANinePlayerController::QuitGame()
+{
+    UKismetSystemLibrary::QuitGame(this, this, EQuitPreference::Quit, false);
 }
 
 void ANinePlayerController::BeginPlay()

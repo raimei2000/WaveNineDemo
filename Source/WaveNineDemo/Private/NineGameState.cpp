@@ -19,7 +19,7 @@
 
 ANineGameState::ANineGameState()
 {
-    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = false;
 
     SpawnedCoinCount = 0;
     CollectedCoinCount = 0;
@@ -117,25 +117,30 @@ void ANineGameState::UpdateHUD() const
                 if (UTextBlock* TimeText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Time"))))
                 {
                     float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
-                    TimeText->SetText(FText::FromString(FString::Printf(TEXT("Time: %.1f"), RemainingTime)));
+                    TimeText->SetText(FText::FromString(FString::Printf(TEXT("%.1f"), RemainingTime)));
                 }
 
                 if (UTextBlock* ScoreText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Score"))))
                 {
                     int32 Score = GameInstance->GetTotalScore();
-                    ScoreText->SetText(FText::FromString(FString::Printf(TEXT("Score: %d"), Score)));
+                    ScoreText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Score)));
                 }
 
                 if (UTextBlock* LevelText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Level"))))
                 {
                     int32 Level = GameInstance->GetCurrentLevelIndex() + 1;
-                    LevelText->SetText(FText::FromString(FString::Printf(TEXT("Level: %d"), Level)));
+                    int32 Wave = GameInstance->GetCurrentWaveIndex() + 1;
+                    LevelText->SetText(FText::FromString(FString::Printf(TEXT("%d-%d"), Level, Wave)));
                 }
 
-                if (UTextBlock* WaveText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("Wave"))))
+                if (UTextBlock* CollectedCoinText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("CollectedCoin"))))
                 {
-                    int32 Wave = GameInstance->GetCurrentWaveIndex() + 1;
-                    WaveText->SetText(FText::FromString(FString::Printf(TEXT("-Wave: %d"), Wave)));
+                    CollectedCoinText->SetText(FText::FromString(FString::Printf(TEXT("%d"), CollectedCoinCount)));
+                }
+
+                if (UTextBlock* SpawnedCoinText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("SpawnedCoin"))))
+                {
+                    SpawnedCoinText->SetText(FText::FromString(FString::Printf(TEXT("%d"), SpawnedCoinCount)));
                 }
             }
         }
@@ -204,15 +209,6 @@ void ANineGameState::StartLevel()
 
     GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ANineGameState::EndWave, WaveDuration, false);
     GetWorldTimerManager().SetTimer(HUDUpdateTimerHandle, this, &ANineGameState::UpdateHUD, 0.1f, true);
-}
-
-void ANineGameState::Tick(float DeltaTime)
-{
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(1, 0.f, FColor::Black, FString::Printf(TEXT("Coin: %d / %d"), CollectedCoinCount, SpawnedCoinCount));
-        GEngine->AddOnScreenDebugMessage(3, 0.f, FColor::Yellow, FString::Printf(TEXT("Score: %d"), GameInstance->GetTotalScore()));
-    }
 }
 
 void ANineGameState::OnGameOver()
