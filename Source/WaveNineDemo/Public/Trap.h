@@ -31,6 +31,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Trap")
 	float Damage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trap|Effects")
+	USoundBase* ActivationSound;
+
 	FTimerHandle TriggerTimerHandle;
 
 protected:

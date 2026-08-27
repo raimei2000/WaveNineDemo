@@ -1,5 +1,6 @@
 ﻿#include "Trap.h"
 #include "Components/DecalComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ATrap::ATrap()
 {
@@ -33,7 +34,14 @@ void ATrap::Tick(float DeltaTime)
 
 void ATrap::TriggerTrap()
 {
-
+	if (ActivationSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			GetWorld(),
+			ActivationSound,
+			GetActorLocation()
+		);
+	}
 }
 
 void ATrap::DestroyTrap()
