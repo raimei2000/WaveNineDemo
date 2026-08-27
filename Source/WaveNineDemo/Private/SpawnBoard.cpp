@@ -16,13 +16,19 @@ ASpawnBoard::ASpawnBoard()
 	SpawnDelay = 2.5f;
 }
 
-void ASpawnBoard::Activate()
+void ASpawnBoard::Activate(float Z)
 {
 	SizeX = SpawnBoard->GetScaledBoxExtent().X;
 	SizeY = SpawnBoard->GetScaledBoxExtent().Y;
+	SpawnZ = Z;
 	OriginLocation = GetActorLocation();
 
 	GetWorldTimerManager().SetTimer(SpawnSpikeTimerHandle, this, &ASpawnBoard::SpawnTrap, SpawnDelay, true);
+}
+
+FName ASpawnBoard::GetTrapName() const
+{
+	return TrapName;
 }
 
 FVector2D ASpawnBoard::GetRandomPointOnBoard() const
@@ -37,6 +43,6 @@ void ASpawnBoard::SpawnTrap() const
 	if (ActorToSpawn)
 	{
 		FVector2D Rand2DPoint = GetRandomPointOnBoard();
-		GetWorld()->SpawnActor<ATrap>(ActorToSpawn, FVector(Rand2DPoint.X, Rand2DPoint.Y, -12.f), FRotator::ZeroRotator);
+		GetWorld()->SpawnActor<ATrap>(ActorToSpawn, FVector(Rand2DPoint.X, Rand2DPoint.Y, SpawnZ), FRotator::ZeroRotator);
 	}
 }

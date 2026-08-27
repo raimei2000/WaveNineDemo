@@ -202,16 +202,28 @@ void ANineGameState::StartLevel()
     }
 
     // Activate Traps
-    // wave 2: activate spike
     if (WaveIndex >= 1) {
         TArray<AActor*> Boards;
         UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnBoard::StaticClass(), Boards);
 
         if (Boards.Num() > 0)
         {
-            if (ASpawnBoard* Board = Cast<ASpawnBoard>(Boards[0]))
+            for (AActor* Actor : Boards)
             {
-                Board->Activate();
+                if (ASpawnBoard* Board = Cast<ASpawnBoard>(Actor))
+                {
+                    if (Board->GetTrapName() == FName("Explosion")) // Explosion trap
+                    {
+                        if (WaveIndex >= 2)
+                        {
+                            Board->Activate(220.f);
+                        }
+                    }
+                    else                                            // Spike trap
+                    {
+                        Board->Activate(-12.f);
+                    }
+                }
             }
         }
     }
