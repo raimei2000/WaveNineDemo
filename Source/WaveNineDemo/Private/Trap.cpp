@@ -12,7 +12,7 @@ ATrap::ATrap()
 	WarningDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("WarningDecal"));
 	WarningDecal->SetupAttachment(SceneRoot);
 
-	PrimaryActorTick.bCanEverTick = true;
+	//PrimaryActorTick.bCanEverTick = true;
 	TriggerDelay = 0.f;
 	AffectRadius = 0.f;
 	Damage = 0.f;
