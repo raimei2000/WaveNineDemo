@@ -6,6 +6,7 @@
 #include "Components/WidgetComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
+#include "Components/VerticalBox.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -13,9 +14,10 @@ ANineCharacter::ANineCharacter()
 {
     PrimaryActorTick.bCanEverTick = false;
 
+    DefaultSpringArmLength = 300.f;
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
     SpringArm->SetupAttachment(RootComponent);
-    SpringArm->TargetArmLength = 300.0f;
+    SpringArm->TargetArmLength = DefaultSpringArmLength;
     SpringArm->bUsePawnControlRotation = true;
 
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -23,8 +25,23 @@ ANineCharacter::ANineCharacter()
     Camera->bUsePawnControlRotation = false;
 
     NormalSpeed = 600.0f;
+    CurrentSpeed = NormalSpeed;
     SprintSpeedMultiplier = 1.7f;
     SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
+
+    SlowDuration = 2.5f;
+    SlowFactor = 0.7f;
+    MaxSlowStack = 3;
+    SlowStack = 0;
+    bSlow = false;
+
+    BlindDuration = 3.f;
+    bBlind = false;
+    DebuffSpringArmLength = 100.f;
+
+    ConfusionDuration = 3.f;
+    ConfusedDirection = 1.f;
+    bConfusion = false;
 
     GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
@@ -40,11 +57,11 @@ void ANineCharacter::Move(const FInputActionValue& Value)
 
     if (!FMath::IsNearlyZero(MoveInput.X))
     {
-        AddMovementInput(GetActorForwardVector(), MoveInput.X);
+        AddMovementInput(ConfusedDirection * GetActorForwardVector(), MoveInput.X);
     }
     if (!FMath::IsNearlyZero(MoveInput.Y))
     {
-        AddMovementInput(GetActorRightVector(), MoveInput.Y);
+        AddMovementInput(ConfusedDirection * GetActorRightVector(), MoveInput.Y);
     }
 }
 
@@ -66,16 +83,17 @@ void ANineCharacter::StopJump(const FInputActionValue& Value)
 
 void ANineCharacter::Look(const FInputActionValue& Value)
 {
-    FVector2D LookInput = Value.Get<FVector2d>();
+    FVector2D LookInput = Value.Get<FVector2D>();
     AddControllerYawInput(LookInput.X);
     AddControllerPitchInput(LookInput.Y);
 }
 
 void ANineCharacter::StartSprint(const FInputActionValue& Value)
 {
+    if (bSlow) return;
     if (GetCharacterMovement())
     {
-        GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+        GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed * SprintSpeedMultiplier;
     }
 }
 
@@ -83,7 +101,7 @@ void ANineCharacter::StopSprint(const FInputActionValue& Value)
 {
     if (GetCharacterMovement())
     {
-        GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+        GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
     }
 }
 
@@ -102,7 +120,7 @@ float ANineCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& 
 
 void ANineCharacter::UpdateHPUI()
 {
-    if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(GetWorld()->GetFirstPlayerController()))
+    if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(GetController()))
     {
         if (UUserWidget* HUD = NinePlayerController->GetHUDWidget())
         {
@@ -113,6 +131,56 @@ void ANineCharacter::UpdateHPUI()
             if (UTextBlock* HPPercent = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("HPPercent"))))
             {
                 HPPercent->SetText(FText::FromString(FString::Printf(TEXT("%.0f%%"), Health)));
+            }
+        }
+    }
+}
+
+void ANineCharacter::UpdateDebuffUI()
+{
+    if (ANinePlayerController* NinePlayerController = Cast<ANinePlayerController>(GetController()))
+    {
+        if (UUserWidget* HUD = NinePlayerController->GetHUDWidget())
+        {
+            if (UVerticalBox* SlowBox = Cast<UVerticalBox>(HUD->GetWidgetFromName(TEXT("SlowVerticalBox"))))
+            {
+                if (bSlow)
+                {
+                    if (UTextBlock* SlowStackText = Cast<UTextBlock>(HUD->GetWidgetFromName(TEXT("SlowStack"))))
+                    {
+                        SlowStackText->SetText(FText::FromString(FString::Printf(TEXT("x%d"), SlowStack)));
+                    }
+                    SlowBox->SetVisibility(ESlateVisibility::HitTestInvisible);
+                }
+                else
+                {
+
+                    SlowBox->SetVisibility(ESlateVisibility::Collapsed);
+                }
+            }
+
+            if (UWidget* ConfusionText = HUD->GetWidgetFromName(TEXT("ConfusionText")))
+            {
+                if (bConfusion)
+                {
+                    ConfusionText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+                }
+                else
+                {
+                    ConfusionText->SetVisibility(ESlateVisibility::Collapsed);
+                }
+            }
+
+            if (UWidget* BlindImage = HUD->GetWidgetFromName(TEXT("BlindImage")))
+            {
+                if (bBlind)
+                {
+                    BlindImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+                }
+                else
+                {
+                    BlindImage->SetVisibility(ESlateVisibility::Hidden);
+                }
             }
         }
     }
@@ -182,6 +250,71 @@ void ANineCharacter::Heal(float HealAmount)
 {
     Health = FMath::Clamp(Health + HealAmount, 0.f, MaxHealth);
     UpdateHPUI();
+}
+
+void ANineCharacter::ActivateSlow()
+{
+    GetWorldTimerManager().ClearTimer(SlowTimerHandle);
+    GetWorldTimerManager().SetTimer(SlowTimerHandle, this, &ANineCharacter::DeactivateSlow, SlowDuration, false);
+
+    if (SlowStack >= MaxSlowStack) return;
+
+    CurrentSpeed *= SlowFactor;
+    GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+
+    bSlow = true;
+    SlowStack++;
+
+    UpdateDebuffUI();
+}
+
+void ANineCharacter::DeactivateSlow()
+{
+    CurrentSpeed = NormalSpeed;
+    GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+
+    bSlow = false;
+    SlowStack = 0;
+
+    UpdateDebuffUI();
+}
+
+void ANineCharacter::ActivateBlind()
+{
+    GetWorldTimerManager().ClearTimer(BlindTimerHandle);
+    GetWorldTimerManager().SetTimer(BlindTimerHandle, this, &ANineCharacter::DeactivateBlind, BlindDuration, false);
+
+    SpringArm->TargetArmLength = DebuffSpringArmLength;
+    bBlind = true;
+
+    UpdateDebuffUI();
+}
+
+void ANineCharacter::DeactivateBlind()
+{
+    SpringArm->TargetArmLength = DefaultSpringArmLength;
+    bBlind = false;
+
+    UpdateDebuffUI();
+}
+
+void ANineCharacter::ActivateConfuse()
+{
+    GetWorldTimerManager().ClearTimer(ConfusionTimerHandle);
+    GetWorldTimerManager().SetTimer(ConfusionTimerHandle, this, &ANineCharacter::DeactivateConfuse, ConfusionDuration, false);
+
+    ConfusedDirection = -1.f;
+    bConfusion = true;
+
+    UpdateDebuffUI();
+}
+
+void ANineCharacter::DeactivateConfuse()
+{
+    ConfusedDirection = 1.f;
+    bConfusion = false;
+
+    UpdateDebuffUI();
 }
 
 void ANineCharacter::OnDeath()

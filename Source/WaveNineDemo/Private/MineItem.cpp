@@ -1,4 +1,5 @@
 ﻿#include "MineItem.h"
+#include "NineCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -60,6 +61,11 @@ void AMineItem::Explode()
 		if (Actor && Actor->ActorHasTag("Player"))
 		{
 			UGameplayStatics::ApplyDamage(Actor, ExplosionDamage, nullptr, this, UDamageType::StaticClass());
+
+			if (ANineCharacter* NineCharacter = Cast<ANineCharacter>(Actor))
+			{
+				NineCharacter->ActivateConfuse();
+			}
 		}
 	}
 
