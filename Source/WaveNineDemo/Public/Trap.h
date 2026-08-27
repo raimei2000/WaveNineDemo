@@ -19,14 +19,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Trap|Components")
 	UStaticMeshComponent* StaticMesh;
 
-protected:
-	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Trap|Components")
+	UDecalComponent* WarningDecal;
 
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void TriggerTrap();
-
-protected:
 	UPROPERTY(EditAnywhere, Category = "Trap")
 	float TriggerDelay;
 
@@ -37,4 +32,11 @@ protected:
 	float Damage;
 
 	FTimerHandle TriggerTimerHandle;
+
+protected:
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void TriggerTrap();
 };

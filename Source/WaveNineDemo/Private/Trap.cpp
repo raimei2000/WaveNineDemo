@@ -1,4 +1,5 @@
 ﻿#include "Trap.h"
+#include "Components/DecalComponent.h"
 
 ATrap::ATrap()
 {
@@ -7,6 +8,9 @@ ATrap::ATrap()
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(SceneRoot);
+
+	WarningDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("WarningDecal"));
+	WarningDecal->SetupAttachment(SceneRoot);
 
 	PrimaryActorTick.bCanEverTick = true;
 	TriggerDelay = 0.f;

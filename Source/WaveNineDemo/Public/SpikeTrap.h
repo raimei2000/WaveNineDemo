@@ -12,6 +12,8 @@ class WAVENINEDEMO_API ASpikeTrap : public ATrap
 public:
 	ASpikeTrap();
 
+	virtual void BeginPlay() override;
+
 protected:
 	virtual void TriggerTrap() override;
 };
