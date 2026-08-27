@@ -159,6 +159,18 @@ void ANineCharacter::UpdateDebuffUI()
                 }
             }
 
+            if (UWidget* ConfusionText = HUD->GetWidgetFromName(TEXT("ConfusionText")))
+            {
+                if (bConfusion)
+                {
+                    ConfusionText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+                }
+                else
+                {
+                    ConfusionText->SetVisibility(ESlateVisibility::Collapsed);
+                }
+            }
+
             if (UWidget* BlindImage = HUD->GetWidgetFromName(TEXT("BlindImage")))
             {
                 if (bBlind)
