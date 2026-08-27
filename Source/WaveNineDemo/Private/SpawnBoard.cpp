@@ -16,21 +16,13 @@ ASpawnBoard::ASpawnBoard()
 	SpawnDelay = 2.5f;
 }
 
-void ASpawnBoard::BeginPlay()
+void ASpawnBoard::Activate()
 {
-	Super::BeginPlay();
+	SizeX = SpawnBoard->GetScaledBoxExtent().X;
+	SizeY = SpawnBoard->GetScaledBoxExtent().Y;
+	OriginLocation = GetActorLocation();
 
-	if (UNineGameInstance* NineGameInstance = Cast<UNineGameInstance>(GetGameInstance()))
-	{
-		if (NineGameInstance->GetCurrentWaveIndex() >= 1)
-		{
-			SizeX = SpawnBoard->GetScaledBoxExtent().X;
-			SizeY = SpawnBoard->GetScaledBoxExtent().Y;
-			OriginLocation = GetActorLocation();
-
-			GetWorldTimerManager().SetTimer(SpawnSpikeTimerHandle, this, &ASpawnBoard::SpawnTrap, SpawnDelay, true);
-		}
-	}
+	GetWorldTimerManager().SetTimer(SpawnSpikeTimerHandle, this, &ASpawnBoard::SpawnTrap, SpawnDelay, true);
 }
 
 FVector2D ASpawnBoard::GetRandomPointOnBoard() const

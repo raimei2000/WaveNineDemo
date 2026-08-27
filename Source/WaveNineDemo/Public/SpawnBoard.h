@@ -15,8 +15,7 @@ class WAVENINEDEMO_API ASpawnBoard : public AActor
 public:	
 	ASpawnBoard();
 
-protected:
-	virtual void BeginPlay() override;
+	void Activate();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
