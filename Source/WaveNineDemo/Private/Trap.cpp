@@ -1,6 +1,8 @@
 ﻿#include "Trap.h"
 #include "Components/DecalComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "NineCharacter.h"
 
 ATrap::ATrap()
 {
@@ -41,6 +43,19 @@ void ATrap::TriggerTrap()
 			ActivationSound,
 			GetActorLocation()
 		);
+	}
+
+	TArray<AActor*> Hits;
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+
+	UKismetSystemLibrary::SphereOverlapActors(
+		this, GetActorLocation(), AffectRadius,
+		ObjectTypes, ANineCharacter::StaticClass(), TArray<AActor*> {this}, Hits);
+
+	for (AActor* Hit : Hits)
+	{
+		UGameplayStatics::ApplyDamage(Hit, Damage, nullptr, this, UDamageType::StaticClass());
 	}
 }
 

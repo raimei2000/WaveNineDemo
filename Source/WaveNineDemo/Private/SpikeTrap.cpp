@@ -1,7 +1,5 @@
 ﻿#include "SpikeTrap.h"
-#include "NineCharacter.h"
 #include "Components/DecalComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 ASpikeTrap::ASpikeTrap()
@@ -28,19 +26,6 @@ void ASpikeTrap::TriggerTrap()
 
     StaticMesh->SetVisibility(true);
     WarningDecal->SetVisibility(false);
-
-    TArray<AActor*> Hits;
-    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
-
-    UKismetSystemLibrary::SphereOverlapActors(
-        this, GetActorLocation(), AffectRadius,
-        ObjectTypes, ANineCharacter::StaticClass(), TArray<AActor*> {this}, Hits);
-
-    for (AActor* Hit : Hits)
-    {
-        UGameplayStatics::ApplyDamage(Hit, Damage, nullptr, this, UDamageType::StaticClass());
-    }
 
     GetWorldTimerManager().SetTimer(DestroyTimerHandle, this, &ASpikeTrap::DestroyTrap, DestroyDelay, false);
 }
