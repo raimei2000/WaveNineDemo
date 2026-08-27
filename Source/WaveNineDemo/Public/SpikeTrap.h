@@ -1,0 +1,17 @@
+﻿#pragma once
+
+#include "CoreMinimal.h"
+#include "Trap.h"
+#include "SpikeTrap.generated.h"
+
+UCLASS()
+class WAVENINEDEMO_API ASpikeTrap : public ATrap
+{
+	GENERATED_BODY()
+
+public:
+	ASpikeTrap();
+
+protected:
+	virtual void TriggerTrap() override;
+};
