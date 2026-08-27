@@ -39,4 +39,6 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void TriggerTrap();
+
+	virtual void DestroyTrap();
 };

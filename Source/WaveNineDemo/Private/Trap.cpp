@@ -35,3 +35,8 @@ void ATrap::TriggerTrap()
 {
 
 }
+
+void ATrap::DestroyTrap()
+{
+	Destroy();
+}

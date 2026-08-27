@@ -9,6 +9,7 @@ ASpikeTrap::ASpikeTrap()
     TriggerDelay = 3.f;
     AffectRadius = 130.f;
     Damage = 20.f;
+    DestroyDelay = 0.5f;
 
     WarningDecal->DecalSize = FVector(100.f, AffectRadius, AffectRadius);
     WarningDecal->SetRelativeRotation(FRotator(-90.f, 0.f, 0.f));
@@ -40,4 +41,6 @@ void ASpikeTrap::TriggerTrap()
     {
         UGameplayStatics::ApplyDamage(Hit, Damage, nullptr, this, UDamageType::StaticClass());
     }
+
+    GetWorldTimerManager().SetTimer(DestroyTimerHandle, this, &ASpikeTrap::DestroyTrap, DestroyDelay, false);
 }

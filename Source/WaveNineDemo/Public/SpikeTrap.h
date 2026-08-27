@@ -16,4 +16,8 @@ public:
 
 protected:
 	virtual void TriggerTrap() override;
+
+	FTimerHandle DestroyTimerHandle;
+
+	float DestroyDelay;
 };
