@@ -1,5 +1,6 @@
 ﻿#include "SpawnBoard.h"
 #include "Trap.h"
+#include "NineGameInstance.h"
 #include "Components/BoxComponent.h"
 
 ASpawnBoard::ASpawnBoard()
@@ -19,11 +20,17 @@ void ASpawnBoard::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SizeX = SpawnBoard->GetScaledBoxExtent().X;
-	SizeY = SpawnBoard->GetScaledBoxExtent().Y;
-	OriginLocation = GetActorLocation();
+	if (UNineGameInstance* NineGameInstance = Cast<UNineGameInstance>(GetGameInstance()))
+	{
+		if (NineGameInstance->GetCurrentWaveIndex() >= 1)
+		{
+			SizeX = SpawnBoard->GetScaledBoxExtent().X;
+			SizeY = SpawnBoard->GetScaledBoxExtent().Y;
+			OriginLocation = GetActorLocation();
 
-	GetWorldTimerManager().SetTimer(SpawnSpikeTimerHandle, this, &ASpawnBoard::SpawnTrap, SpawnDelay, true);
+			GetWorldTimerManager().SetTimer(SpawnSpikeTimerHandle, this, &ASpawnBoard::SpawnTrap, SpawnDelay, true);
+		}
+	}
 }
 
 FVector2D ASpawnBoard::GetRandomPointOnBoard() const
@@ -38,6 +45,6 @@ void ASpawnBoard::SpawnTrap() const
 	if (ActorToSpawn)
 	{
 		FVector2D Rand2DPoint = GetRandomPointOnBoard();
-		GetWorld()->SpawnActor<ATrap>(ActorToSpawn, FVector(Rand2DPoint.X, Rand2DPoint.Y, -10.f), FRotator::ZeroRotator);
+		GetWorld()->SpawnActor<ATrap>(ActorToSpawn, FVector(Rand2DPoint.X, Rand2DPoint.Y, -12.f), FRotator::ZeroRotator);
 	}
 }

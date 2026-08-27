@@ -7,7 +7,7 @@
 ASpikeTrap::ASpikeTrap()
 {
     TriggerDelay = 3.f;
-    AffectRadius = 130.f;
+    AffectRadius = 155.f;
     Damage = 20.f;
     DestroyDelay = 0.5f;
 
