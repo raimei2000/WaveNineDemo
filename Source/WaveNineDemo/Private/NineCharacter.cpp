@@ -39,6 +39,10 @@ ANineCharacter::ANineCharacter()
     bBlind = false;
     DebuffSpringArmLength = 100.f;
 
+    ConfusionDuration = 3.f;
+    ConfusedDirection = 1.f;
+    bConfusion = false;
+
     GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
     MaxHealth = 100;
@@ -53,11 +57,11 @@ void ANineCharacter::Move(const FInputActionValue& Value)
 
     if (!FMath::IsNearlyZero(MoveInput.X))
     {
-        AddMovementInput(GetActorForwardVector(), MoveInput.X);
+        AddMovementInput(ConfusedDirection * GetActorForwardVector(), MoveInput.X);
     }
     if (!FMath::IsNearlyZero(MoveInput.Y))
     {
-        AddMovementInput(GetActorRightVector(), MoveInput.Y);
+        AddMovementInput(ConfusedDirection * GetActorRightVector(), MoveInput.Y);
     }
 }
 
@@ -278,6 +282,25 @@ void ANineCharacter::DeactivateBlind()
 {
     SpringArm->TargetArmLength = DefaultSpringArmLength;
     bBlind = false;
+
+    UpdateDebuffUI();
+}
+
+void ANineCharacter::ActivateConfuse()
+{
+    GetWorldTimerManager().ClearTimer(ConfusionTimerHandle);
+    GetWorldTimerManager().SetTimer(ConfusionTimerHandle, this, &ANineCharacter::DeactivateConfuse, ConfusionDuration, false);
+
+    ConfusedDirection = -1.f;
+    bConfusion = true;
+
+    UpdateDebuffUI();
+}
+
+void ANineCharacter::DeactivateConfuse()
+{
+    ConfusedDirection = 1.f;
+    bConfusion = false;
 
     UpdateDebuffUI();
 }

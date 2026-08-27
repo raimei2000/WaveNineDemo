@@ -61,6 +61,10 @@ public:
 
     void DeactivateBlind();
 
+    void ActivateConfuse();
+
+    void DeactivateConfuse();
+
 private:
     void OnDeath();
 
@@ -93,4 +97,11 @@ private:
     float DebuffSpringArmLength;
     bool bBlind;
     FTimerHandle BlindTimerHandle;
+
+    // confusion debuff
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Confusion")
+    float ConfusionDuration;
+    float ConfusedDirection;
+    bool bConfusion;
+    FTimerHandle ConfusionTimerHandle;
 };
