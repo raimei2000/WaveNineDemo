@@ -18,6 +18,8 @@ protected:
 
 	virtual void TriggerTrap() override;
 
+	virtual void Affect(AActor* Hit) override;
+
 	FTimerHandle DestroyParticleTimerHandle;
 
 };

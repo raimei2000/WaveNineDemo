@@ -44,4 +44,6 @@ protected:
 	virtual void TriggerTrap();
 
 	virtual void DestroyTrap();
+
+	virtual void Affect(AActor* Hit);
 };

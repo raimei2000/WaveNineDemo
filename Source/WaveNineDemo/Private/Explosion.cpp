@@ -1,4 +1,5 @@
 ﻿#include "Explosion.h"
+#include "NineCharacter.h"
 #include "Components/DecalComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -41,5 +42,15 @@ void AExplosion::TriggerTrap()
 			2.f,
 			false
 		);
+	}
+}
+
+void AExplosion::Affect(AActor* Hit)
+{
+	Super::Affect(Hit);
+
+	if (ANineCharacter* NineCharacter = Cast<ANineCharacter>(Hit))
+	{
+		NineCharacter->ActivateBlind();
 	}
 }

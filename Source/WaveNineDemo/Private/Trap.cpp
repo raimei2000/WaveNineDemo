@@ -56,10 +56,16 @@ void ATrap::TriggerTrap()
 	for (AActor* Hit : Hits)
 	{
 		UGameplayStatics::ApplyDamage(Hit, Damage, nullptr, this, UDamageType::StaticClass());
+		Affect(Hit);
 	}
 }
 
 void ATrap::DestroyTrap()
 {
 	Destroy();
+}
+
+void ATrap::Affect(AActor* Hit)
+{
+
 }

@@ -15,7 +15,6 @@ void ASlowItem::ActivateItem(AActor* Activator)
         if (ANineCharacter* Player = Cast<ANineCharacter>(Activator))
         {
             Player->ActivateSlow();
-            Player->ActivateBlind();
 
             DestroyItem();
         }
