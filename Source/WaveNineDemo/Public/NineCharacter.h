@@ -41,6 +41,8 @@ protected:
 
     void UpdateHPUI();
 
+    void UpdateDebuffUI();
+
     virtual void BeginPlay() override;
 
 public:
@@ -51,15 +53,55 @@ public:
 
     void Heal(float HealAmount);
 
+    void ActivateSlow();
+
+    void DeactivateSlow();
+
+    void ActivateBlind();
+
+    void DeactivateBlind();
+
+    void ActivateConfuse();
+
+    void DeactivateConfuse();
+
 private:
     void OnDeath();
 
 private:
+    float DefaultSpringArmLength;
+
     float NormalSpeed;
+    float CurrentSpeed;
     float SprintSpeedMultiplier;
     float SprintSpeed;
 
     float Health;
     float MaxHealth;
 
+    // slow debuff
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Slow")
+    float SlowDuration;
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Slow")
+    float SlowFactor;
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Slow")
+    int32 MaxSlowStack;
+    int32 SlowStack;
+    bool bSlow;
+    FTimerHandle SlowTimerHandle;
+
+    // blind debuff
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Blind")
+    float BlindDuration;
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Blind")
+    float DebuffSpringArmLength;
+    bool bBlind;
+    FTimerHandle BlindTimerHandle;
+
+    // confusion debuff
+    UPROPERTY(EditAnywhere, Category = "NineCharacter|Debuff|Confusion")
+    float ConfusionDuration;
+    float ConfusedDirection;
+    bool bConfusion;
+    FTimerHandle ConfusionTimerHandle;
 };
