@@ -1,5 +1,6 @@
 ﻿#include "NineGameState.h"
 #include "SpawnVolume.h"
+#include "SpawnBoard.h"
 #include "BaseItem.h"
 #include "BaseCoin.h"
 #include "BigCoinItem.h"
@@ -161,6 +162,7 @@ void ANineGameState::StartLevel()
     const FHealthPotionSpecRow* HealthPotionRow = HealthPotionSpecTable->FindRow<FHealthPotionSpecRow>(RowName, TEXT("HealthPotionSpec"));
     const FMineSpecRow* MineRow = MineSpecTable->FindRow<FMineSpecRow>(RowName, TEXT("MineSpec"));
 
+    // Spawn Items
     if (Volumes.Num() > 0) {
         const int32 ItemToSpawn = 40;
 
@@ -194,6 +196,33 @@ void ANineGameState::StartLevel()
                 {
                     AMineItem* Mine = Cast<AMineItem>(SpawnedItem);
                     Mine->SetMineSpec(MineRow->DamagePerWave[WaveIndex], MineRow->ExplosionDelayPerWave[WaveIndex]);
+                }
+            }
+        }
+    }
+
+    // Activate Traps
+    if (WaveIndex >= 1) {
+        TArray<AActor*> Boards;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnBoard::StaticClass(), Boards);
+
+        if (Boards.Num() > 0)
+        {
+            for (AActor* Actor : Boards)
+            {
+                if (ASpawnBoard* Board = Cast<ASpawnBoard>(Actor))
+                {
+                    if (Board->GetTrapName() == FName("Explosion")) // Explosion trap
+                    {
+                        if (WaveIndex >= 2)
+                        {
+                            Board->Activate(220.f);
+                        }
+                    }
+                    else                                            // Spike trap
+                    {
+                        Board->Activate(-12.f);
+                    }
                 }
             }
         }
