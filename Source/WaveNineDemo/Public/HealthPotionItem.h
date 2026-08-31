@@ -28,6 +28,8 @@ protected:
 
 	virtual void ActivateItem(AActor* Activator) override;
 
+	virtual void BeginPlay() override;
+
 	virtual void Tick(float DeltaTime) override;
 
 	void UsePotion(AActor* Activator);

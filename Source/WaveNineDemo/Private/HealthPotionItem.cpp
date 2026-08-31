@@ -1,6 +1,6 @@
 ﻿#include "HealthPotionItem.h"
 #include "NineCharacter.h"
-#include "Blueprint/UserWidget.h"
+#include "InteractWidget.h"
 #include "Components/WidgetComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -10,7 +10,7 @@ AHealthPotionItem::AHealthPotionItem()
 {
     Tooltip = CreateDefaultSubobject<UWidgetComponent>(TEXT("Tooltip"));
     Tooltip->SetupAttachment(RootComponent);
-    Tooltip->SetWidgetSpace(EWidgetSpace::Screen);
+    Tooltip->SetWidgetSpace(EWidgetSpace::World);
 
     NearSphere = CreateDefaultSubobject<USphereComponent>(TEXT("NearSphere"));
     NearSphere->SetupAttachment(RootComponent);
@@ -39,6 +39,12 @@ void AHealthPotionItem::ActivateItem(AActor* Activator)
         }
         DestroyItem();
     }
+}
+
+void AHealthPotionItem::BeginPlay()
+{
+    Super::BeginPlay();
+    Tooltip->InitWidget();
 }
 
 void AHealthPotionItem::Tick(float DeltaTime)
@@ -71,14 +77,9 @@ void AHealthPotionItem::NearOverlap(UPrimitiveComponent* OverlappedComp, AActor*
 {
     if (OtherActor && OtherActor->ActorHasTag(FName("Player")))
     {
-        Tooltip->SetVisibility(true);
-
-        if (UUserWidget* WidgetInstance = Tooltip->GetUserWidgetObject())
+        if (UInteractWidget* WidgetInstance = Cast<UInteractWidget>(Tooltip->GetUserWidgetObject()))
         {
-            if (UFunction* FadeInFunc = WidgetInstance->FindFunction(FName("PlayFadeIn")))
-            {
-                WidgetInstance->ProcessEvent(FadeInFunc, nullptr);
-            }
+            WidgetInstance->PlayShow();
         }
     }
 }
@@ -87,14 +88,9 @@ void AHealthPotionItem::NearEndOverlap(UPrimitiveComponent* OverlappedComp, AAct
 {
     if (OtherActor && OtherActor->ActorHasTag(FName("Player")))
     {
-        Tooltip->SetVisibility(false);
-
-        if (UUserWidget* WidgetInstance = Tooltip->GetUserWidgetObject())
+        if (UInteractWidget* WidgetInstance = Cast<UInteractWidget>(Tooltip->GetUserWidgetObject()))
         {
-            if (UFunction* FadeOutFunc = WidgetInstance->FindFunction(FName("PlayFadeOut")))
-            {
-                WidgetInstance->ProcessEvent(FadeOutFunc, nullptr);
-            }
+            WidgetInstance->PlayHide();
         }
     }
 }
