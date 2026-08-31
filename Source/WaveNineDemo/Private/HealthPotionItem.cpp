@@ -51,7 +51,8 @@ void AHealthPotionItem::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (!Tooltip->IsVisible())
+    UUserWidget* W = Tooltip->GetUserWidgetObject();
+    if (!W || W->GetVisibility() == ESlateVisibility::Collapsed)
     {
         return;
     }

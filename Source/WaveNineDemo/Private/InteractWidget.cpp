@@ -28,7 +28,6 @@ void UInteractWidget::PlayShow()
     SetVisibility(ESlateVisibility::HitTestInvisible);
     if (ShowAnim)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, FString::Printf(TEXT("SHOW@@")));
         PlayAnimation(ShowAnim, 0.f, 1, EUMGSequencePlayMode::Forward, 1.f);
     }
 }
@@ -38,7 +37,13 @@ void UInteractWidget::PlayHide()
     bHide = true;
     if (ShowAnim)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Black, FString::Printf(TEXT("Hide@@")));
-        PlayAnimation(ShowAnim, 0.f, 1, EUMGSequencePlayMode::Reverse, 1.f);
+        if (IsAnimationPlaying(ShowAnim))
+        {
+            ReverseAnimation(ShowAnim);
+        }
+        else
+        {
+            PlayAnimation(ShowAnim, 0.f, 1, EUMGSequencePlayMode::Reverse, 1.f);
+        }
     }
 }
