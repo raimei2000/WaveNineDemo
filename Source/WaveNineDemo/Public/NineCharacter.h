@@ -6,7 +6,6 @@
 
 class USpringArmComponent;
 class UCameraComponent;
-class UWidgetComponent;
 struct FInputActionValue;
 
 UCLASS()
