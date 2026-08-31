@@ -1,6 +1,7 @@
 ﻿#include "HealthPotionItem.h"
 #include "NineCharacter.h"
 #include "Components/WidgetComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -9,6 +10,12 @@ AHealthPotionItem::AHealthPotionItem()
     Tooltip = CreateDefaultSubobject<UWidgetComponent>(TEXT("Tooltip"));
     Tooltip->SetupAttachment(RootComponent);
     Tooltip->SetWidgetSpace(EWidgetSpace::Screen);
+
+    NearSphere = CreateDefaultSubobject<USphereComponent>(TEXT("NearSphere"));
+    NearSphere->SetupAttachment(RootComponent);
+    //NearSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+    NearSphere->OnComponentBeginOverlap.AddDynamic(this, &AHealthPotionItem::NearOverlap);
+    NearSphere->OnComponentEndOverlap.AddDynamic(this, &AHealthPotionItem::NearEndOverlap);
 
     HealAmount = 30.f;
     ItemType = "HealthPotion";
@@ -52,5 +59,25 @@ void AHealthPotionItem::Tick(float DeltaTime)
         LookAt.Roll = 0.f;
 
         Tooltip->SetWorldRotation(LookAt);
+    }
+}
+
+void AHealthPotionItem::UsePotion(AActor* Activator)
+{
+}
+
+void AHealthPotionItem::NearOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+    if (OtherActor && OtherActor->ActorHasTag(FName("Player")))
+    {
+        Tooltip->SetVisibility(true);
+    }
+}
+
+void AHealthPotionItem::NearEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+    if (OtherActor && OtherActor->ActorHasTag(FName("Player")))
+    {
+        Tooltip->SetVisibility(false);
     }
 }
