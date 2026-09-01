@@ -1,4 +1,5 @@
 ﻿#include "NineCharacter.h"
+#include "WaveNineDemo/WaveNineDemo.h"
 #include "NinePlayerController.h"
 #include "NineGameState.h"
 #include "HealthPotionItem.h"
@@ -230,7 +231,7 @@ AActor* ANineCharacter::FindBestInteractable() const
     TArray<AActor*> Overlapped;
 
     TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Interactable));
 
     TArray<AActor*> IgnoreActors;
     IgnoreActors.Add(const_cast<ANineCharacter*>(this));
