@@ -107,7 +107,7 @@ void ANineCharacter::StopSprint(const FInputActionValue& Value)
 
 void ANineCharacter::Interact(const FInputActionValue& Value)
 {
-
+    GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::White, FString::Printf(TEXT("Interact@@")));
 }
 
 float ANineCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
