@@ -12,11 +12,8 @@ AHealthPotionItem::AHealthPotionItem()
     Tooltip->SetupAttachment(RootComponent);
     Tooltip->SetWidgetSpace(EWidgetSpace::World);
 
-    NearSphere = CreateDefaultSubobject<USphereComponent>(TEXT("NearSphere"));
-    NearSphere->SetupAttachment(RootComponent);
-    //NearSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
-    NearSphere->OnComponentBeginOverlap.AddDynamic(this, &AHealthPotionItem::NearOverlap);
-    NearSphere->OnComponentEndOverlap.AddDynamic(this, &AHealthPotionItem::NearEndOverlap);
+    Collision->OnComponentBeginOverlap.RemoveAll(this);
+    Collision->OnComponentEndOverlap.RemoveAll(this);
 
     HealAmount = 30.f;
     ItemType = "HealthPotion";
@@ -25,6 +22,32 @@ AHealthPotionItem::AHealthPotionItem()
 void AHealthPotionItem::SetHealthPotionSpec(float Amount)
 {
     HealAmount = Amount;
+}
+
+void AHealthPotionItem::OnFocused_Implementation()
+{
+    if (UInteractWidget* WidgetInstance = Cast<UInteractWidget>(Tooltip->GetUserWidgetObject()))
+    {
+        WidgetInstance->PlayShow();
+    }
+}
+
+void AHealthPotionItem::OnUnfocused_Implementation()
+{
+    if (UInteractWidget* WidgetInstance = Cast<UInteractWidget>(Tooltip->GetUserWidgetObject()))
+    {
+        WidgetInstance->PlayHide();
+    }
+}
+
+void AHealthPotionItem::OnInteract_Implementation(AActor* Interactor)
+{
+    ActivateItem(Interactor);
+}
+
+bool AHealthPotionItem::CanInteract_Implementation() const
+{
+    return true;
 }
 
 void AHealthPotionItem::ActivateItem(AActor* Activator)
@@ -67,31 +90,5 @@ void AHealthPotionItem::Tick(float DeltaTime)
         LookAt.Roll = 0.f;
 
         Tooltip->SetWorldRotation(LookAt);
-    }
-}
-
-void AHealthPotionItem::UsePotion(AActor* Activator)
-{
-}
-
-void AHealthPotionItem::NearOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-    if (OtherActor && OtherActor->ActorHasTag(FName("Player")))
-    {
-        if (UInteractWidget* WidgetInstance = Cast<UInteractWidget>(Tooltip->GetUserWidgetObject()))
-        {
-            WidgetInstance->PlayShow();
-        }
-    }
-}
-
-void AHealthPotionItem::NearEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-    if (OtherActor && OtherActor->ActorHasTag(FName("Player")))
-    {
-        if (UInteractWidget* WidgetInstance = Cast<UInteractWidget>(Tooltip->GetUserWidgetObject()))
-        {
-            WidgetInstance->PlayHide();
-        }
     }
 }

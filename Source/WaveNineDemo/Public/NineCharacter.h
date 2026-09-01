@@ -25,16 +25,24 @@ public:
 protected:
     UFUNCTION()
     void Move(const FInputActionValue& Value);
+
     UFUNCTION()
     void StartJump(const FInputActionValue& Value);
+
     UFUNCTION()
     void StopJump(const FInputActionValue& Value);
+
     UFUNCTION()
     void Look(const FInputActionValue& Value);
+
     UFUNCTION()
     void StartSprint(const FInputActionValue& Value);
+
     UFUNCTION()
     void StopSprint(const FInputActionValue& Value);
+
+    UFUNCTION()
+    void Interact(const FInputActionValue& Value);
 
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
@@ -43,6 +51,10 @@ protected:
     void UpdateDebuffUI();
 
     virtual void BeginPlay() override;
+
+    void ScanForInteractable();
+
+    AActor* FindBestInteractable() const;
 
 public:
     UFUNCTION(BlueprintCallable)
@@ -103,4 +115,22 @@ private:
     float ConfusedDirection;
     bool bConfusion;
     FTimerHandle ConfusionTimerHandle;
+
+    // ---------- Interact ----------
+    UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+    float InteractionRadius = 150.f;
+
+    float CosLimit;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+    float InteractHalfAngle = 80.f;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+    float ScanInterval = 0.15f;
+
+    UPROPERTY()
+    TObjectPtr<AActor> FocusedActor;
+
+    FTimerHandle ScanTimerHandle;
+    // ---------- Interact ----------
 };

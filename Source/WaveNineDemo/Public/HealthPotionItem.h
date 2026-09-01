@@ -1,13 +1,14 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Interactable.h"
 #include "MovableItem.h"
 #include "HealthPotionItem.generated.h"
 
 class UWidgetComponent;
 
 UCLASS()
-class WAVENINEDEMO_API AHealthPotionItem : public AMovableItem
+class WAVENINEDEMO_API AHealthPotionItem : public AMovableItem, public IInteractable
 {
 	GENERATED_BODY()
 
@@ -16,6 +17,14 @@ public:
 
 	void SetHealthPotionSpec(float Amount);
 
+	virtual void OnFocused_Implementation() override;
+
+	virtual void OnUnfocused_Implementation() override;
+
+	virtual void OnInteract_Implementation(AActor* Interactor) override;
+
+	virtual bool CanInteract_Implementation() const override;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Heal")
 	float HealAmount;
@@ -23,21 +32,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Heal")
 	UWidgetComponent* Tooltip;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Heal")
-	USphereComponent* NearSphere;
-
 	virtual void ActivateItem(AActor* Activator) override;
 
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
-
-	void UsePotion(AActor* Activator);
-
-	UFUNCTION()
-	virtual void NearOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void NearEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	
 };

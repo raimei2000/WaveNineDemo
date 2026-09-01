@@ -13,6 +13,7 @@ ANinePlayerController::ANinePlayerController() :
     JumpAction(nullptr),
     LookAction(nullptr),
     SprintAction(nullptr),
+    InterAction(nullptr),
     HUDWidgetInstance(nullptr),
     MainMenuWidgetInstance(nullptr)
 {
