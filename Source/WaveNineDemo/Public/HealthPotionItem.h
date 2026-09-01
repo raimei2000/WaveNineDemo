@@ -33,9 +33,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Heal")
 	UWidgetComponent* Tooltip;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Heal")
-	USphereComponent* NearSphere;
-
 	virtual void ActivateItem(AActor* Activator) override;
 
 	virtual void BeginPlay() override;
