@@ -14,8 +14,6 @@ AHealthPotionItem::AHealthPotionItem()
 
     Collision->OnComponentBeginOverlap.RemoveAll(this);
     Collision->OnComponentEndOverlap.RemoveAll(this);
-    Collision->OnComponentBeginOverlap.AddDynamic(this, &AHealthPotionItem::OnFocused);
-    Collision->OnComponentEndOverlap.AddDynamic(this, &AHealthPotionItem::OnUnfocused);
 
     HealAmount = 30.f;
     ItemType = "HealthPotion";
@@ -26,31 +24,30 @@ void AHealthPotionItem::SetHealthPotionSpec(float Amount)
     HealAmount = Amount;
 }
 
-void AHealthPotionItem::OnFocused(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AHealthPotionItem::OnFocused_Implementation()
 {
-    if (OtherActor && OtherActor->ActorHasTag(FName("Player")))
+    if (UInteractWidget* WidgetInstance = Cast<UInteractWidget>(Tooltip->GetUserWidgetObject()))
     {
-        if (UInteractWidget* WidgetInstance = Cast<UInteractWidget>(Tooltip->GetUserWidgetObject()))
-        {
-            WidgetInstance->PlayShow();
-        }
+        WidgetInstance->PlayShow();
     }
 }
 
-void AHealthPotionItem::OnUnfocused(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AHealthPotionItem::OnUnfocused_Implementation()
 {
-    if (OtherActor && OtherActor->ActorHasTag(FName("Player")))
+    if (UInteractWidget* WidgetInstance = Cast<UInteractWidget>(Tooltip->GetUserWidgetObject()))
     {
-        if (UInteractWidget* WidgetInstance = Cast<UInteractWidget>(Tooltip->GetUserWidgetObject()))
-        {
-            WidgetInstance->PlayHide();
-        }
+        WidgetInstance->PlayHide();
     }
 }
 
-void AHealthPotionItem::OnInteract(AActor* Activator)
+void AHealthPotionItem::OnInteract_Implementation(AActor* Interactor)
 {
-    ActivateItem(Activator);
+    ActivateItem(Interactor);
+}
+
+bool AHealthPotionItem::CanInteract_Implementation() const
+{
+    return true;
 }
 
 void AHealthPotionItem::ActivateItem(AActor* Activator)
