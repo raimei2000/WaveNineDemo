@@ -111,7 +111,10 @@ void ANineCharacter::StopSprint(const FInputActionValue& Value)
 
 void ANineCharacter::Interact(const FInputActionValue& Value)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::White, FString::Printf(TEXT("Interact@@")));
+    if (FocusedActor && FocusedActor->Implements<UInteractable>())
+    {
+        IInteractable::Execute_OnInteract(FocusedActor, this);
+    }
 }
 
 float ANineCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -336,7 +339,7 @@ void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
             if (PlayerController->InterAction)
             {
                 EnhancedInput->BindAction(PlayerController->InterAction,
-                                          ETriggerEvent::Triggered,
+                                          ETriggerEvent::Started,
                                           this,
                                           &ANineCharacter::Interact);
             }
