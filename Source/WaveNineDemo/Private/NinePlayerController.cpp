@@ -13,6 +13,7 @@ ANinePlayerController::ANinePlayerController() :
     JumpAction(nullptr),
     LookAction(nullptr),
     SprintAction(nullptr),
+    InterAction(nullptr),
     HUDWidgetInstance(nullptr),
     MainMenuWidgetInstance(nullptr)
 {
@@ -93,12 +94,6 @@ void ANinePlayerController::ShowMainMenu(bool bIsRestart)
 
             if (bIsRestart)
             {
-                UFunction* PlayAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
-                if (PlayAnimFunc)
-                {
-                    MainMenuWidgetInstance->ProcessEvent(PlayAnimFunc, nullptr);
-                }
-
                 if (UTextBlock* TotalScoreText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("TotalScoreText"))))
                 {
                     if (UNineGameInstance* NineGameInstance = Cast<UNineGameInstance>(UGameplayStatics::GetGameInstance(this)))
@@ -106,6 +101,17 @@ void ANinePlayerController::ShowMainMenu(bool bIsRestart)
                         TotalScoreText->SetText(FText::FromString(FString::Printf(TEXT("Total Score: %d"), NineGameInstance->GetTotalScore())));
                     }
                 }
+
+                UFunction* PlayGameOverAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
+                if (PlayGameOverAnimFunc)
+                {
+                    MainMenuWidgetInstance->ProcessEvent(PlayGameOverAnimFunc, nullptr);
+                }
+            }
+
+            if (UFunction* PlayStartButtonAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayStartGameAnim")))
+            {
+                MainMenuWidgetInstance->ProcessEvent(PlayStartButtonAnimFunc, nullptr);
             }
         }
     }

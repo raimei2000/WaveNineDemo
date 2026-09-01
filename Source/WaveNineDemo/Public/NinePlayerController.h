@@ -15,20 +15,23 @@ class WAVENINEDEMO_API ANinePlayerController : public APlayerController
 public:
 	ANinePlayerController();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input");
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputMappingContext* InputMappingContext;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input");
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* MoveAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input");
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* JumpAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input");
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* LookAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input");
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* SprintAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* InterAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	TSubclassOf<UUserWidget> HUDWidgetClass;
