@@ -105,6 +105,11 @@ void ANineCharacter::StopSprint(const FInputActionValue& Value)
     }
 }
 
+void ANineCharacter::Interact(const FInputActionValue& Value)
+{
+
+}
+
 float ANineCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
     float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -241,9 +246,15 @@ void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
                                           this,
                                           &ANineCharacter::StopSprint);
             }
+            if (PlayerController->InterAction)
+            {
+                EnhancedInput->BindAction(PlayerController->InterAction,
+                                          ETriggerEvent::Triggered,
+                                          this,
+                                          &ANineCharacter::Interact);
+            }
         }
     }
-
 }
 
 void ANineCharacter::Heal(float HealAmount)

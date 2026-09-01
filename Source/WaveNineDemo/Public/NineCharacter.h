@@ -25,16 +25,24 @@ public:
 protected:
     UFUNCTION()
     void Move(const FInputActionValue& Value);
+
     UFUNCTION()
     void StartJump(const FInputActionValue& Value);
+
     UFUNCTION()
     void StopJump(const FInputActionValue& Value);
+
     UFUNCTION()
     void Look(const FInputActionValue& Value);
+
     UFUNCTION()
     void StartSprint(const FInputActionValue& Value);
+
     UFUNCTION()
     void StopSprint(const FInputActionValue& Value);
+
+    UFUNCTION()
+    void Interact(const FInputActionValue& Value);
 
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
