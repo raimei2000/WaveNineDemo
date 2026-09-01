@@ -117,6 +117,14 @@ void ANineCharacter::Interact(const FInputActionValue& Value)
     }
 }
 
+void ANineCharacter::Cheat(const FInputActionValue& Value)
+{
+    if (ANineGameState* GameState = Cast<ANineGameState>(GetWorld()->GetGameState()))
+    {
+        GameState->CheatEndWave();
+    }
+}
+
 float ANineCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
     float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -342,6 +350,13 @@ void ANineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
                                           ETriggerEvent::Started,
                                           this,
                                           &ANineCharacter::Interact);
+            }
+            if (PlayerController->CheatAction)
+            {
+                EnhancedInput->BindAction(PlayerController->CheatAction,
+                                          ETriggerEvent::Started,
+                                          this,
+                                          &ANineCharacter::Cheat);
             }
         }
     }

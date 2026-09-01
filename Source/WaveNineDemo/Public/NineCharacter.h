@@ -44,6 +44,9 @@ protected:
     UFUNCTION()
     void Interact(const FInputActionValue& Value);
 
+    UFUNCTION()
+    void Cheat(const FInputActionValue& Value);
+
     virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
     void UpdateHPUI();
