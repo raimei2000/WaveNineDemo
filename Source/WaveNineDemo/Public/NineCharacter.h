@@ -52,6 +52,10 @@ protected:
 
     virtual void BeginPlay() override;
 
+    void ScanForInteractable();
+
+    AActor* FindBestInteractable() const;
+
 public:
     UFUNCTION(BlueprintCallable)
     float GetCharacterHealth() const;
@@ -111,4 +115,22 @@ private:
     float ConfusedDirection;
     bool bConfusion;
     FTimerHandle ConfusionTimerHandle;
+
+    // ---------- Interact ----------
+    UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+    float InteractionRadius = 150.f;
+
+    float CosLimit;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+    float InteractHalfAngle = 80.f;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+    float ScanInterval = 0.15f;
+
+    UPROPERTY()
+    TObjectPtr<AActor> FocusedActor;
+
+    FTimerHandle ScanTimerHandle;
+    // ---------- Interact ----------
 };

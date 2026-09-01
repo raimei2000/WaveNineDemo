@@ -1,6 +1,7 @@
 ﻿#include "NineCharacter.h"
 #include "NinePlayerController.h"
 #include "NineGameState.h"
+#include "HealthPotionItem.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
@@ -9,6 +10,8 @@
 #include "Components/VerticalBox.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 ANineCharacter::ANineCharacter()
 {
@@ -195,6 +198,89 @@ void ANineCharacter::BeginPlay()
 {
     Super::BeginPlay();
     UpdateHPUI();
+
+    CosLimit = FMath::Cos(FMath::DegreesToRadians(InteractHalfAngle));
+    GetWorldTimerManager().SetTimer(ScanTimerHandle, this, &ANineCharacter::ScanForInteractable, ScanInterval, true);
+}
+
+void ANineCharacter::ScanForInteractable()
+{
+    AActor* NewFocus = FindBestInteractable();
+
+    if (NewFocus == FocusedActor)
+    {
+        return;
+    }
+
+    if (FocusedActor)
+    {
+        IInteractable::Execute_OnUnfocused(FocusedActor);
+    }
+
+    if (NewFocus)
+    {
+        IInteractable::Execute_OnFocused(NewFocus);
+    }
+
+    FocusedActor = NewFocus;
+}
+
+AActor* ANineCharacter::FindBestInteractable() const
+{
+    TArray<AActor*> Overlapped;
+
+    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
+
+    TArray<AActor*> IgnoreActors;
+    IgnoreActors.Add(const_cast<ANineCharacter*>(this));
+
+    UKismetSystemLibrary::SphereOverlapActors(
+        GetWorld(), GetActorLocation(), InteractionRadius,
+        ObjectTypes, nullptr, IgnoreActors, Overlapped);
+
+    FVector ViewDirection = GetActorForwardVector();
+    if (const APlayerCameraManager* CamMgr = UGameplayStatics::GetPlayerCameraManager(this, 0))
+    {
+        ViewDirection = CamMgr->GetCameraRotation().Vector();
+    }
+
+    AActor* Best = nullptr;
+    float BestScore = -1.f;
+
+    for (AActor* Candidate : Overlapped)
+    {
+        if (!Candidate || !Candidate->Implements<UInteractable>())
+        {
+            continue;
+        }
+
+        if (!IInteractable::Execute_CanInteract(Candidate))
+        {
+            continue;
+        }
+
+        const FVector ToTarget = Candidate->GetActorLocation() - GetActorLocation();
+        const float Distance = ToTarget.Size();
+        if (Distance < KINDA_SMALL_NUMBER)
+        {
+            continue; // 너무 가까이 있다면 제외
+        }
+
+        const float Dot = FVector::DotProduct(ViewDirection, ToTarget / Distance);
+        if (Dot < CosLimit)
+        {
+            continue; // 시야각 밖에 있다면 제외
+        }
+
+        const float Score = Dot * (1.f - Distance / InteractionRadius);
+        if (Score > BestScore)
+        {
+            Best = Candidate;
+            BestScore = Score;
+        }
+    }
+    return Best;
 }
 
 float ANineCharacter::GetCharacterHealth() const
