@@ -251,3 +251,8 @@ void ANineGameState::OnGameOver()
         }
     }
 }
+
+void ANineGameState::CheatEndWave()
+{
+    EndWave();
+}

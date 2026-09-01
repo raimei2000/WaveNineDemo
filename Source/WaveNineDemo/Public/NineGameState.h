@@ -22,6 +22,8 @@ public:
 
 	void OnGameOver();
 
+	void CheatEndWave();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game|Data")
 	UDataTable* WaveDurationTable;
